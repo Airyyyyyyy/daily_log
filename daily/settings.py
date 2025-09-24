@@ -84,8 +84,10 @@ DATABASES = {
     }
 }
 
+# MongoDB Configuration
 import os
 from mongoengine import connect
+from django.core.management.color import color_style
 
 # Use environment variables for security
 MONGODB_NAME = os.environ.get('MONGODB_NAME', 'DailyLog')
@@ -93,14 +95,22 @@ MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', 'abdulmaleeql')
 MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', 'HyWrwrkaH90DQLGi')
 MONGODB_CLUSTER = os.environ.get('MONGODB_CLUSTER', 'telegrambot.zttkoj8.mongodb.net')
 
-# Build the connection string from environment variables
+# Build the connection string
 MONGODB_URI = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_NAME}?retryWrites=true&w=majority"
 
+# Connect to MongoDB with error handling
 try:
-    connect(host=MONGODB_URI)
+    connect(
+        db=MONGODB_NAME,
+        host=MONGODB_URI,
+        alias='default',
+        retryWrites=True,
+        w='majority'
+    )
     print("✅ MongoDB connected successfully!")
 except Exception as e:
     print(f"❌ MongoDB connection failed: {e}")
+    print(f"🔗 Connection URI: mongodb+srv://{MONGODB_USERNAME}:******@{MONGODB_CLUSTER}/{MONGODB_NAME}")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
