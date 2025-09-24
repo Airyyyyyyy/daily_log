@@ -84,15 +84,23 @@ DATABASES = {
     }
 }
 
+import os
 from mongoengine import connect
 
-MONGODB_NAME = "DailyLog"
-MONGODB_HOST = "mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot"
+# Use environment variables for security
+MONGODB_NAME = os.environ.get('MONGODB_NAME', 'DailyLog')
+MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', 'abdulmaleeql')
+MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', 'HyWrwrkaH90DQLGi')
+MONGODB_CLUSTER = os.environ.get('MONGODB_CLUSTER', 'telegrambot.zttkoj8.mongodb.net')
 
-connect(
-    db=MONGODB_NAME,
-    host=MONGODB_HOST
-)
+# Build the connection string from environment variables
+MONGODB_URI = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_NAME}?retryWrites=true&w=majority"
+
+try:
+    connect(host=MONGODB_URI)
+    print("✅ MongoDB connected successfully!")
+except Exception as e:
+    print(f"❌ MongoDB connection failed: {e}")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
