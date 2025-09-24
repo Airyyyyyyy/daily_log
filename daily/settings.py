@@ -84,28 +84,37 @@ DATABASES = {
     }
 }
 
-# MongoDB Configuration - Fork-safe version
+# MongoDB Configuration - Secure version
 import os
 from mongoengine import connect
 import urllib.parse
 
-# Use environment variables for security
-MONGODB_NAME = os.environ.get('MONGODB_NAME', 'DailyLog')
-MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', 'abdulmaleeql')
-MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', 'HyWrwrkaH90DQLGi')
-MONGODB_CLUSTER = os.environ.get('MONGODB_CLUSTER', 'telegrambot.zttkoj8.mongodb.net')
+# Force use of environment variables (no insecure defaults)
+try:
+    MONGODB_NAME = os.environ["MONGODB_NAME"]
+    MONGODB_USERNAME = os.environ["MONGODB_USERNAME"]
+    MONGODB_PASSWORD = os.environ["MONGODB_PASSWORD"]
+    MONGODB_CLUSTER = os.environ["MONGODB_CLUSTER"]
+except KeyError as e:
+    raise RuntimeError(
+        f"❌ Missing required environment variable: {str(e)}. "
+        "Please set it in Render dashboard."
+    )
 
 # URL encode the password
 encoded_password = urllib.parse.quote_plus(MONGODB_PASSWORD)
 
 # Build the connection string
-MONGODB_URI = f"mongodb+srv://{MONGODB_USERNAME}:{encoded_password}@{MONGODB_CLUSTER}/{MONGODB_NAME}?retryWrites=true&w=majority&appName=Telegrambot"
+MONGODB_URI = (
+    f"mongodb+srv://{MONGODB_USERNAME}:{encoded_password}"
+    f"@{MONGODB_CLUSTER}/{MONGODB_NAME}"
+    "?retryWrites=true&w=majority&appName=Telegrambot"
+)
 
-# Don't connect here - we'll connect lazily when needed
 def get_mongo_connection():
     """Lazy connection function to avoid fork safety issues"""
     try:
-        connect(host=MONGODB_URI, alias='default')
+        connect(host=MONGODB_URI, alias="default")
         print("✅ MongoDB connected successfully!")
         return True
     except Exception as e:
@@ -120,6 +129,7 @@ def ensure_mongo_connection():
     if not _MONGO_CONNECTED:
         _MONGO_CONNECTED = get_mongo_connection()
     return _MONGO_CONNECTED
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
