@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure--*e(y!0-#3u#&7c4!9+v51m_u+=v=d!&7vp25-_jnt$x5orqw)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.onrender.com', 
+    '127.0.0.1', 
+]
 
 
 # Application definition
@@ -90,18 +93,6 @@ connect(
     db=MONGODB_NAME,
     host=MONGODB_HOST
 )
-
-# DATABASES = { 
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'DailyLog',  
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot',  
-#         }
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
