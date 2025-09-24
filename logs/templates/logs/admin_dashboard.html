@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Daily Log System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            background: #fef2f2;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+        .navbar {
+            background: #fef2f2;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            color: #ec3338;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .nav-welcome {
+            color: black;
+            font-weight: 500;
+            font-size: 25px;
+            margin-left: 85rem;
+        }
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+            margin: 2rem auto;
+        }
+        .input-field {
+            width: 100%;
+            font-size: 23px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #ec3338;
+            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.2);
+        }
+        .btn-logout {
+            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: 60px;
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            text-align: center;
+            height: 60px;
+        }
+        .btn-view-logs {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0 auto 1rem auto;
+            width: fit-content;
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 21px;
+
+        }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 1.5rem;
+            display: none; /* Hidden by default */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 22px;
+        }
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            flex: 1;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .table-header-section {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="brand">DAILY LOG SYSTEM</div>
+        <div class="nav-welcome">Welcome, Admin</div>
+        <a href="{% url 'logout' %}" class="btn-logout" id="logoutBtn">Logout</a>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="page-title">Staff Log Search</div>
+        
+        <div style="margin-bottom: 1.5rem; text-align: right;">
+            <a href="{% url 'add_staff' %}" class="btn-add">
+                Add Staff
+            </a>
+        </div>
+        
+        <form method="get" class="search-container" action="">
+            <div class="form-group" style="flex: 2;">
+                <label class="form-label">Search Staff Member</label>
+                <input type="text" class="input-field" name="staff_name" value="{{ staff_name }}" placeholder="Enter staff name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Date</label>
+                <input type="date" class="input-field" name="date" value="{{ date }}">
+            </div>
+            <button class="btn-primary" type="submit">Search</button>
+            <a href="{% url 'export_logs_excel' %}?staff_name={{ staff_name }}&date={{ date }}" class="btn-secondary">Export to Excel</a>
+        </form>
+        
+        <div class="table-header-section">
+            <button class="btn-view-logs" id="viewLogsBtn">View Logs</button>
+        </div>
+        
+        <div class="table-container" id="logTableContainer">
+            <table id="logTable" class="w-full" style="font-size: 21px">
+                <thead>
+                    <tr>
+                        <th>STAFF NAME</th>
+                        <th>START TIME</th>
+                        <th>END TIME</th>
+                        <th>DESCRIPTION</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                    {% if logs %}
+                        {% for log in logs %}
+                            <tr>
+                                <td>{{ log.employee.get_full_name|default:log.employee.username }}</td>
+                                <td>{{ log.time_interval|slice:":5" }}</td>
+                                <td>{{ log.time_interval|slice:"-5:" }}</td>
+                                <td>{{ log.description }}</td>
+                                <td>{{ log.status }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500" style="font-size: 22px">
+                                No logs found{% if staff_name %} for {{ staff_name }}{% endif %}{% if date %} on {{ date }}{% endif %}.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewLogsBtn = document.getElementById('viewLogsBtn');
+            const logTableContainer = document.getElementById('logTableContainer');
+            
+            
+            const logsExist = document.querySelectorAll('#logTableBody tr').length > 0;
+            
+            if (!logsExist) {
+                viewLogsBtn.style.display = 'none';
+                logTableContainer.style.display = 'none';
+            } else {
+                viewLogsBtn.style.display = 'flex';
+                
+                viewLogsBtn.addEventListener('click', function() {
+                    // Toggle the display of the table container
+                    if (logTableContainer.style.display === 'none' || logTableContainer.style.display === '') {
+                        logTableContainer.style.display = 'block';
+                        viewLogsBtn.textContent = 'Hide Logs';
+                        viewLogsBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                    } else {
+                        logTableContainer.style.display = 'none';
+                        viewLogsBtn.textContent = 'View Logs';
+                        viewLogsBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

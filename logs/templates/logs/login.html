@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login - Daily Log System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #fef2f2;                    
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 520px;
+            font-size: 20px;
+            padding: 2rem;
+            min-height: 450px;
+            backdrop-filter: blur(5px);
+        }
+        .brand {
+            color: #ec3338;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #ec3338;
+            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.2);
+        }
+        .btn-login {
+            background-color: #ec3338;
+            color: white;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .toggle-buttons {
+            display: flex;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+            font-size: 20px;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="brand">DAILY LOG SYSTEM</div>
+        
+        <!-- Admin/Employee Toggle -->
+        <div class="toggle-buttons">
+            <button class="toggle-btn active" id="employeeBtn">Employee</button>
+            <button class="toggle-btn" id="adminBtn">Admin</button>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Employee Login Form -->
+        <div id="employeeForm">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">EMPLOYEE LOGIN</h1>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="login_type" value="employee">
+                <input 
+                    type="text" 
+                    name="id_card" 
+                    placeholder="ID Card Number" 
+                    class="input-field" 
+                    required
+                    autocomplete="off"
+                >
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    class="input-field" 
+                    required
+                    autocomplete="off"
+                >
+                <button 
+                    type="submit" 
+                    class="btn-login"
+                >
+                    LOGIN
+                </button>
+            </form>
+        </div>
+
+        <!-- Admin Login Form (hidden by default) -->
+        <div id="adminForm" style="display:none;">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">ADMIN LOGIN</h1>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="login_type" value="admin">
+                <input 
+                    type="text" 
+                    name="admin_id" 
+                    placeholder="Admin Id" 
+                    class="input-field" 
+                    required
+                    autocomplete="off"
+                >
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    class="input-field" 
+                    required
+                    autocomplete="off"
+                >
+                <button 
+                    type="submit" 
+                    class="btn-login"
+                >
+                  LOGIN
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between Admin and Employee login
+        const adminBtn = document.getElementById('adminBtn');
+        const employeeBtn = document.getElementById('employeeBtn');
+        const adminForm = document.getElementById('adminForm');
+        const employeeForm = document.getElementById('employeeForm');
+        
+        adminBtn.addEventListener('click', () => {
+            adminBtn.classList.add('active');
+            employeeBtn.classList.remove('active');
+            adminForm.style.display = 'block';
+            employeeForm.style.display = 'none';
+        });
+        
+        employeeBtn.addEventListener('click', () => {
+            employeeBtn.classList.add('active');
+            adminBtn.classList.remove('active');
+            employeeForm.style.display = 'block';
+            adminForm.style.display = 'none';
+        });
+
+        // Auto-dismiss alert messages after 3 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
