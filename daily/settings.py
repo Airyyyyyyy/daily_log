@@ -84,10 +84,10 @@ DATABASES = {
     }
 }
 
-# MongoDB Configuration
+# MongoDB Configuration - Fork-safe version
 import os
 from mongoengine import connect
-from django.core.management.color import color_style
+import urllib.parse
 
 # Use environment variables for security
 MONGODB_NAME = os.environ.get('MONGODB_NAME', 'DailyLog')
@@ -95,22 +95,31 @@ MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', 'abdulmaleeql')
 MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', 'HyWrwrkaH90DQLGi')
 MONGODB_CLUSTER = os.environ.get('MONGODB_CLUSTER', 'telegrambot.zttkoj8.mongodb.net')
 
-# Build the connection string
-MONGODB_URI = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_NAME}?retryWrites=true&w=majority"
+# URL encode the password
+encoded_password = urllib.parse.quote_plus(MONGODB_PASSWORD)
 
-# Connect to MongoDB with error handling
-try:
-    connect(
-        db=MONGODB_NAME,
-        host=MONGODB_URI,
-        alias='default',
-        retryWrites=True,
-        w='majority'
-    )
-    print("✅ MongoDB connected successfully!")
-except Exception as e:
-    print(f"❌ MongoDB connection failed: {e}")
-    print(f"🔗 Connection URI: mongodb+srv://{MONGODB_USERNAME}:******@{MONGODB_CLUSTER}/{MONGODB_NAME}")
+# Build the connection string
+MONGODB_URI = f"mongodb+srv://{MONGODB_USERNAME}:{encoded_password}@{MONGODB_CLUSTER}/{MONGODB_NAME}?retryWrites=true&w=majority&appName=Telegrambot"
+
+# Don't connect here - we'll connect lazily when needed
+def get_mongo_connection():
+    """Lazy connection function to avoid fork safety issues"""
+    try:
+        connect(host=MONGODB_URI, alias='default')
+        print("✅ MongoDB connected successfully!")
+        return True
+    except Exception as e:
+        print(f"❌ MongoDB connection failed: {e}")
+        return False
+
+# Initialize connection on first use
+_MONGO_CONNECTED = False
+
+def ensure_mongo_connection():
+    global _MONGO_CONNECTED
+    if not _MONGO_CONNECTED:
+        _MONGO_CONNECTED = get_mongo_connection()
+    return _MONGO_CONNECTED
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

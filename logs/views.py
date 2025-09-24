@@ -12,7 +12,13 @@ from logs.mongo_models import User
 from logs.forms import StaffRegistrationForm
 from mongoengine.queryset.visitor import Q
 from logs.mongo_models import DailyLog, EmployeeProfile, User as MongoUser  # MongoEngine models
+from daily.settings import ensure_mongo_connection
 
+def get_mongo_models():
+    """Lazy import of MongoEngine models"""
+    ensure_mongo_connection()
+    from logs.mongo_models import User, DailyLog, EmployeeProfile, User as MongoUser
+    return User, DailyLog, EmployeeProfile, MongoUser
 
 def login_view(request):
     if request.method == 'POST':
@@ -54,7 +60,6 @@ def login_view(request):
                 messages.error(request, 'User does not exist')
 
     return render(request, 'logs/login.html')
-
 
 @login_required
 def admin_dashboard(request):
