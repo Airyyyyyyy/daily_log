@@ -210,9 +210,29 @@
         @media (max-width: 770px) {
         .navbar {
             flex-direction: column;
+            align-items: center;
             padding: 1rem;
             gap: 1rem;
             text-align: center;
+        }
+        .brand {
+            margin-right: 0;
+            text-align: center;
+            width: 100%;
+        }
+        .nav-actions {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        .nav-welcome {
+            margin-left: 0;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        .btn-logout {
+            margin: 0 auto;
         }
         
         .nav-welcome {
@@ -290,6 +310,13 @@
         td:nth-child(5) {
             font-size: 0.6rem;
             min-width: 70px;
+        }
+
+        th:nth-child(1),
+        th:nth-child(2),
+        th:nth-child(3) {
+            min-width: 40px;
+            font-size: 8px;
         }
 
         .btn-view-logs {
