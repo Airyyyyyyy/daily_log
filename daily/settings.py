@@ -84,52 +84,15 @@ DATABASES = {
     }
 }
 
-# MongoDB Configuration - Secure version
-import os
 from mongoengine import connect
-import urllib.parse
 
-# Force use of environment variables (no insecure defaults)
-try:
-    MONGODB_NAME = os.environ["MONGODB_NAME"]
-    MONGODB_USERNAME = os.environ["MONGODB_USERNAME"]
-    MONGODB_PASSWORD = os.environ["MONGODB_PASSWORD"]
-    MONGODB_CLUSTER = os.environ["MONGODB_CLUSTER"]
-except KeyError as e:
-    raise RuntimeError(
-        f"❌ Missing required environment variable: {str(e)}. "
-        "Please set it in Render dashboard."
-    )
+MONGODB_NAME = "DailyLog"
+MONGODB_HOST = "mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot"
 
-# URL encode the password
-encoded_password = urllib.parse.quote_plus(MONGODB_PASSWORD)
-
-# Build the connection string
-MONGODB_URI = (
-    f"mongodb+srv://{MONGODB_USERNAME}:{encoded_password}"
-    f"@{MONGODB_CLUSTER}/{MONGODB_NAME}"
-    "?retryWrites=true&w=majority&appName=Telegrambot"
+connect(
+    db=MONGODB_NAME,
+    host=MONGODB_HOST
 )
-
-def get_mongo_connection():
-    """Lazy connection function to avoid fork safety issues"""
-    try:
-        connect(host=MONGODB_URI, alias="default")
-        print("✅ MongoDB connected successfully!")
-        return True
-    except Exception as e:
-        print(f"❌ MongoDB connection failed: {e}")
-        return False
-
-# Initialize connection on first use
-_MONGO_CONNECTED = False
-
-def ensure_mongo_connection():
-    global _MONGO_CONNECTED
-    if not _MONGO_CONNECTED:
-        _MONGO_CONNECTED = get_mongo_connection()
-    return _MONGO_CONNECTED
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
