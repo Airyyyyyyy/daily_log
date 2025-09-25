@@ -68,9 +68,8 @@ def admin_dashboard(request):
 
     if staff_name:
         mongo_users = MongoUser.objects(
-            Q(username__icontains=staff_name) |
-            Q(first_name__icontains=staff_name) |
-            Q(last_name__icontains=staff_name)
+            Q(first_name__iexact=staff_name) |
+            Q(last_name__iexact=staff_name)
         )
         logs = logs.filter(employee__in=mongo_users)
 
