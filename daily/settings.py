@@ -24,14 +24,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--*e(y!0-#3u#&7c4!9+v51m_u+=v=d!&7vp25-_jnt$x5orqw)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
+    'dailylog-production.up.railway.app',
+    '.railway.app',
     '.onrender.com', 
     '127.0.0.1',
-    '.railway.app',
-]   
+    'localhost',
+]
 
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://dailylog-production.up.railway.app',
+    'https://*.railway.app',
+    'https://*.onrender.com',
+]
+
+# HTTPS settings for production
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -43,10 +58,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'logs',
+    'whitenoise.runserver_nostatic',  
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,15 +102,22 @@ DATABASES = {
     }
 }
 
+# MongoDB connection
 from mongoengine import connect
 
 MONGODB_NAME = "DailyLog"
 MONGODB_HOST = "mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot"
 
-connect(
-    db=MONGODB_NAME,
-    host=MONGODB_HOST
-)
+try:
+    connect(
+        db=MONGODB_NAME,
+        host=MONGODB_HOST,
+        retryWrites=True,
+        w='majority'
+    )
+    print("MongoDB connected successfully!")
+except Exception as e:
+    print(f"MongoDB connection error: {e}")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
