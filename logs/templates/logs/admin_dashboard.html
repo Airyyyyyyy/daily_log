@@ -195,6 +195,9 @@
             text-align: center;
             margin: 1.5rem 0;
         }
+        .text-center{
+            font-size: 22px;
+        }
         @media (max-width: 770px) {
         .navbar {
             flex-direction: column;
@@ -222,6 +225,7 @@
         .dashboard-container {
             margin: 1rem auto;
             padding: 1.5rem;
+            width: 90%;
         }
         
         .page-title {
@@ -266,13 +270,19 @@
         th, td {
             padding: 0.5rem;
             word-break: break-word;
+            font-size: 0.6rem;
         }
         
         th:nth-child(4),
         td:nth-child(4) {
             min-width: 120px;
         }
-        
+
+        td:nth-child(5) {
+            font-size: 0.6rem;
+            min-width: 70px;
+        }
+
         .btn-view-logs {
             font-size: 1rem;
             padding: 0.6rem 1.2rem;
@@ -282,6 +292,10 @@
         
         .form-label {
             font-size: 1rem;
+        }
+
+        .text-center {
+            font-size: 0.9rem;
         }
     }
     </style>
@@ -343,7 +357,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-gray-500" style="font-size: 22px">
+                            <td colspan="5" class="text-center py-4 text-gray-500">
                                 No logs found{% if staff_name %} for {{ staff_name }}{% endif %}{% if date %} on {{ date }}{% endif %}.
                             </td>
                         </tr>
