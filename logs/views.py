@@ -108,10 +108,18 @@ def daily_log_view(request):
 
     logs = DailyLog.objects(employee=mongo_user, date=today).order_by('time_interval') if mongo_user else []
 
+    day = today.day
+    if 4 <= day <= 20 or 24 <= day <= 30:
+        suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][day % 10 - 1]
+    
+    formatted_date = today.strftime(f'%d{suffix} %B, %Y')
+
     context = {
         'time_intervals': time_intervals,
         'logs': logs,
-        'today': today.strftime('%d %B, %Y'),
+        'today': formatted_date,
     }
     return render(request, 'logs/daily_log.html', context)
 

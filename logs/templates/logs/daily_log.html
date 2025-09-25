@@ -137,6 +137,101 @@
         .toast.show {
             opacity: 1;
         }
+        .welcome-mobile {
+            display: none;
+        }
+        .welcome-desktop {
+            display: inline;
+        }
+
+        @media (max-width: 770px) {
+        .header {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .user-info {
+            margin-left: 0;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .brand {
+            font-size: 1.2rem;
+            order: -1;
+        }
+        
+        .user-info span {
+            font-size: 18px;
+        }
+        
+        .welcome-mobile {
+            display: inline;
+        }
+        
+        .welcome-desktop {
+            display: none;
+        }
+        
+        .container {
+            margin: 1rem auto;
+            padding: 1.5rem;
+        }
+        
+        h1.text-2xl {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .grid.grid-cols-1.md\\:grid-cols-2 {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        
+        .log-table {
+            font-size: 0.875rem;
+        }
+        
+        .log-table th,
+        .log-table td {
+            padding: 0.5rem;
+            word-break: break-word;
+        }
+        
+        .log-table th:nth-child(2),
+        .log-table td:nth-child(2) {
+            min-width: 150px;
+        }
+        
+        .btn-logout {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .input-field,
+        .select-field {
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 13px;
+        }
+        
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        
+        .toast {
+            font-size: 20px;
+            bottom: 2rem;
+            right: 0.5rem;
+            left: 0.5rem;
+            text-align: center;
+        }
+    }
     </style>
 </head>
 <body>
@@ -144,7 +239,8 @@
         <div class="header">
             <div class="brand">DAILY LOG SYSTEM</div>
             <div class="user-info">
-                <span>Welcome, {{ user.first_name }} {{ user.last_name }}</span>
+                <span class="welcome-desktop">Welcome, {{ user.first_name }} {{ user.last_name }}</span>
+                <span class="welcome-mobile">Welcome, {{ user.first_name }}</span>
                 <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
             </div>
         </div>
