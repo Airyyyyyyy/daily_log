@@ -82,10 +82,31 @@ def admin_dashboard(request):
 
 @login_required
 def daily_log_view(request):
-    today = timezone.now().date()
-    time_intervals = generate_time_intervals(today)
+    # Get the selected date from request, default to today
+    selected_date_str = request.GET.get('date', '')
+    if selected_date_str:
+        try:
+            selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = timezone.now().date()
+    else:
+        selected_date = timezone.now().date()
+    
+    time_intervals = generate_time_intervals(selected_date)
 
+    # Get the Mongo user
     mongo_user = MongoUser.objects(username=request.user.username).first()
+
+    if not mongo_user:
+        messages.error(request, 'User profile not found. Please contact administrator.')
+        context = {
+            'time_intervals': time_intervals,
+            'logs': [],
+            'today': selected_date.strftime('%d %B, %Y'),
+            'selected_date': selected_date.isoformat(),
+            'user': {'first_name': 'User', 'last_name': ''},
+        }
+        return render(request, 'logs/daily_log.html', context)
 
     if request.method == 'POST':
         time_interval = request.POST.get('time_interval')
@@ -93,9 +114,10 @@ def daily_log_view(request):
         status = request.POST.get('status')
 
         if time_interval and description and mongo_user:
+            # Use the selected date for the log entry
             DailyLog.objects(
                 employee=mongo_user,
-                date=today,
+                date=selected_date,
                 time_interval=time_interval
             ).update_one(
                 set__description=description,
@@ -103,28 +125,32 @@ def daily_log_view(request):
                 upsert=True
             )
             messages.success(request, 'Log entry saved successfully')
-            return redirect('daily_log')
+            return redirect(f'{request.path}?date={selected_date}')
 
-    logs = DailyLog.objects(employee=mongo_user, date=today).order_by('time_interval') if mongo_user else []
+    # Get logs for the selected date
+    logs = DailyLog.objects(employee=mongo_user, date=selected_date).order_by('time_interval')
 
-    day = today.day
+    # Format date with ordinal suffix
+    day = selected_date.day
     if 4 <= day <= 20 or 24 <= day <= 30:
         suffix = "th"
     else:
         suffix = ["st", "nd", "rd"][day % 10 - 1]
     
-    formatted_date = today.strftime(f'%d{suffix} %B, %Y')
+    formatted_date = selected_date.strftime(f'%d{suffix} %B, %Y')
 
     context = {
         'time_intervals': time_intervals,
         'logs': logs,
         'today': formatted_date,
+        'selected_date': selected_date.isoformat(),
+        'user': mongo_user,
     }
     return render(request, 'logs/daily_log.html', context)
 
 def generate_time_intervals(date):
     intervals = []
-    if date.weekday() == 5:
+    if date.weekday() == 5:  # Saturday
         start_hour, end_hour = 9, 14
     else:
         start_hour, end_hour = 8, 17
@@ -133,7 +159,6 @@ def generate_time_intervals(date):
         for minute in [0, 30]:
             if hour == end_hour and minute == 30:
                 continue
-
             start_time = time(hour, minute)
             end_minute, end_hour_adjusted = minute + 30, hour
             if end_minute == 60:

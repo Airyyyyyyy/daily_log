@@ -429,8 +429,8 @@
                 <label class="form-label">Select Date</label>
                 <input type="date" class="input-field" name="date" value="{{ date }}">
             </div>
-            <button class="btn-primary" type="submit">Search</button>
-            <a href="{% url 'export_logs_excel' %}?staff_name={{ staff_name }}&date={{ date }}" class="btn-secondary">Export to Excel</a>
+            <button class="btn-primary" type="submit" style="margin-bottom: 1rem;">Search</button>
+            <a href="{% url 'export_logs_excel' %}?staff_name={{ staff_name }}&date={{ date }}" class="btn-secondary" style="margin-bottom: 1rem;">Export to Excel</a>
         </form>
         
         <div class="table-header-section">

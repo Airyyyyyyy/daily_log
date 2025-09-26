@@ -143,107 +143,187 @@
         .welcome-desktop {
             display: inline;
         }
-
-        @media (max-width: 770px) {
-        .header {
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            text-align: center;
-        }
-        
-        .user-info {
-            margin-left: 0;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .brand {
-            font-size: 1.2rem;
-            order: -1;
-        }
-        
-        .user-info span {
-            font-size: 18px;
-        }
-        
-        .welcome-mobile {
-            display: inline;
-        }
-        
-        .welcome-desktop {
-            display: none;
-        }
-        
-        .container {
-            margin: 1rem auto;
-            padding: 1.5rem;
-        }
-        
         h1.text-center {
-            font-size: 1rem;
-            margin-bottom: 1rem;
+            font-size: 1.7rem;
         }
-        
-        .grid.grid-cols-1.md\\:grid-cols-2 {
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
+        .date-picker-section {
+            background: #fef2f2;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
         }
-        
-        .log-table {
-            font-size: 0.875rem;
+        .flex {
+            display: flex;
         }
-        
-        .log-table th,
-        .log-table td {
-            padding: 0.5rem;
-            word-break: break-word;
-            min-width: 65px;
+        .flex-col {
+            flex-direction: column;
         }
-        
-        .log-table th:nth-child(2),
-        .log-table td:nth-child(2) {
-            min-width: 150px;
+        .flex-row {
+            flex-direction: row;
         }
-
-        .log-table td:nth-child(3) {
-            font-size: 0.6rem;
-            min-width: 70px;
+        .gap-4 {
+            gap: 1rem;
         }
-        
-        .btn-logout {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.9rem;
+        .items-center {
+            align-items: center;
         }
-        
-        .input-field,
-        .select-field {
-            padding: 0.6rem 0.8rem;
-            margin-bottom: 0.8rem;
-            font-size: 13px;
+        .w-full {
+            width: 100%;
         }
-        
-        .btn-primary,
-        .btn-secondary {
-            padding: 0.6rem;
-            font-size: 0.9rem;
-        }
-        
-        .toast {
-            font-size: 12px;
-            bottom: 2rem;
-            right: 0.2rem;
-            left: auto;
-            text-align: right;
+        .w-auto {
             width: auto;
         }
-
-        .status-badge {
-            font-size: 0.4rem;
-            padding: 0.2rem 0.5rem;
+        .mt-6 {
+            margin-top: 1.5rem;
         }
-    }
+        .mt-0 {
+            margin-top: 0;
+        }
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-gray-700 {
+            font-size: 1.4rem;
+            font-weight: 600;  
+        }
+        @media (max-width: 770px) {
+            .header {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .user-info {
+                margin-left: 0;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .brand {
+                font-size: 1.2rem;
+                order: -1;
+            }
+            
+            .user-info span {
+                font-size: 18px;
+            }
+            
+            .welcome-mobile {
+                display: inline;
+            }
+            
+            .welcome-desktop {
+                display: none;
+            }
+            
+            .container {
+                margin: 1rem auto;
+                padding: 1.5rem;
+            }
+            
+            h1.text-center {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .grid.grid-cols-1.md\\:grid-cols-2 {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .log-table {
+                font-size: 0.875rem;
+            }
+            
+            .log-table th,
+            .log-table td {
+                padding: 0.5rem;
+                word-break: break-word;
+                min-width: 65px;
+            }
+            
+            .log-table th:nth-child(2),
+            .log-table td:nth-child(2) {
+                min-width: 150px;
+            }
+
+            .log-table td:nth-child(3) {
+                font-size: 0.6rem;
+                min-width: 70px;
+            }
+            
+            .btn-logout {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .input-field,
+            .select-field {
+                padding: 0.6rem 0.8rem;
+                margin-bottom: 0.8rem;
+                font-size: 13px;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+            
+            .toast {
+                font-size: 12px;
+                bottom: 2rem;
+                right: 0.2rem;
+                left: auto;
+                text-align: right;
+                width: auto;
+            }
+
+            .status-badge {
+                font-size: 0.4rem;
+                padding: 0.2rem 0.5rem;
+            }
+            
+            /* Mobile responsiveness for date picker */
+            .date-picker-section {
+                padding: 1rem;
+            }
+            
+            .flex-col {
+                gap: 0.5rem;
+            }
+            
+            input[type="date"] {
+                font-size: 1rem;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                margin-top: 0.5rem !important;
+            }
+            
+            .md\\:w-auto {
+                width: 100%;
+            }
+            
+            .md\\:flex-row {
+                flex-direction: column;
+            }
+            
+            .md\\:mt-0 {
+                margin-top: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -255,6 +335,39 @@
                 <span class="welcome-mobile">Welcome, {{ user.first_name }}</span>
                 <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
             </div>
+        </div>
+        
+        <!-- Date Picker Section -->
+        <div class="date-picker-section">
+            <form method="get" class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="w-full md:w-auto">
+                    <label class="block text-gray-700 mb-2">Select Date</label>
+                    <input 
+                        type="date" 
+                        name="date" 
+                        value="{{ selected_date }}"
+                        class="input-field md:w-auto"
+                        style="font-size: 1.1rem;"
+                        max="{% now 'Y-m-d' %}"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    class="btn-primary md:w-auto mt-6 md:mt-0 px-8"
+                    style="background-color: #4b5563; margin-top: 2rem;"
+                >
+                    SEARCH
+                </button>
+                <!-- {% if selected_date != today %}
+                <a 
+                    href="{% url 'daily_log' %}" 
+                    class="btn-secondary md:w-auto mt-2 md:mt-0 px-8 text-center"
+                    style="margin-top: 3rem;"
+                >
+                    VIEW TODAY
+                </a>
+                {% endif %} -->
+            </form>
         </div>
         
         <h1 class="font-bold text-center text-gray-800 mb-6">DAILY LOG FOR {{ today|upper }}</h1>
