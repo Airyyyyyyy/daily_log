@@ -5,10 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Login - Daily Log System</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Daily Log System - Kodick Integrated Limited">
+    <meta property="og:description" content="Streamline your daily workforce management with our intuitive employee tracking system. Monitor activities in real-time.">
+    <meta property="og:image" content="{% static 'logs/Kadicklogo.png' %}">
+    <meta property="og:url" content="https://dailylog-production.up.railway.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Daily Log System">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Daily Log System - Kodick Integrated Limited">
+    <meta name="twitter:description" content="Streamline your daily workforce management with our intuitive employee tracking system.">
+    <meta name="twitter:image" content="{% static 'logs/Kadicklogo.png' %}">
+    
+    <link rel="icon" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: #fef2f2;                    
+            background: black;
+            background-image: url("{% static 'logs/background.ico' %}");   
+            background-size: 20%;               
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -16,7 +34,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             width: 100%;

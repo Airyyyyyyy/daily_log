@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Log - {{ today }}</title>
+    <link rel="icon" type="image/png" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -30,9 +32,18 @@
             border-bottom: 1px solid #e5e7eb;
         }
         .brand {
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
             color: #ec3338;
             font-weight: 700;
             font-size: 1.5rem;
+        }
+        .brand-logo {
+            height: 70px;
+            width: 150px;
+            object-fit: contain;
+            border-radius: 6px;
         }
         .user-info {
             display: flex;
@@ -213,6 +224,10 @@
                 font-size: 1.2rem;
                 order: -1;
             }
+
+            .brand-logo {
+                display: none;
+            }
             
             .user-info span {
                 font-size: 18px;
@@ -294,7 +309,6 @@
                 padding: 0.2rem 0.5rem;
             }
             
-            /* Mobile responsiveness for date picker */
             .date-picker-section {
                 padding: 1rem;
             }
@@ -329,7 +343,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="brand">DAILY LOG SYSTEM</div>
+            <div class="brand">
+                <img src="{% static 'logs/kadick.ico' %}" alt="Logo" class="brand-logo">
+                <span>DAILY LOG SYSTEM</span>
+            </div>
             <div class="user-info">
                 <span class="welcome-desktop">Welcome, {{ user.first_name }} {{ user.last_name }}</span>
                 <span class="welcome-mobile">Welcome, {{ user.first_name }}</span>

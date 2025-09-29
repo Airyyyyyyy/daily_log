@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Daily Log System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         body {
@@ -29,10 +30,19 @@
             margin-right: auto;
         }
 
+        .brand-logo {
+            height: 70px;
+            width: 150px;
+            object-fit: contain;
+            border-radius: 6px;
+            margin-left: -2rem;
+            margin-right: 2rem;
+        }
+
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 3rem; /* Adjust this value for more or less space */
+            gap: 3rem; 
         }
 
         .nav-welcome {
@@ -150,7 +160,7 @@
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             margin-top: 1.5rem;
-            display: none; /* Hidden by default */
+            display: none;
         }
         table {
             width: 100%;
@@ -219,6 +229,9 @@
             margin-right: 0;
             text-align: center;
             width: 100%;
+        }
+        .brand-logo {
+            margin-right: -35px;
         }
         .nav-actions {
             flex-direction: column;
@@ -349,7 +362,7 @@
         text-align: left;
     }
     .brand {
-        font-size: 25px;
+        font-size: 29px;
     }
     .nav-welcome {
         font-size: 1.5rem;
@@ -404,6 +417,7 @@
 </head>
 <body>
     <div class="navbar">
+        <img src="{% static 'logs/kadick.ico' %}" alt="Brand Logo" class="brand-logo">
         <div class="brand">DAILY LOG SYSTEM</div>
         <div class="nav-actions">
             <div class="nav-welcome">Welcome, Admin</div>
