@@ -6,13 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Daily Log System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="icon" type="image/png" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
+        @font-face {
+            font-family: 'Regularfont';
+            src: url("{% static 'logs/Regularfont.ttf' %}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+
+        }
+        @font-face {
+            font-family: 'Boldfont';
+            src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            color: black;
+        }
         body {
             background: #fef2f2;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Regularfont','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
         }
         .navbar {
@@ -193,9 +208,9 @@
             align-items: flex-end;
         }
         .page-title {
-            font-size: 1.5rem;
+            font-size: 1.7rem;
             font-weight: 600;
-            color: #1f2937;
+            font-family: 'Boldfont';
             margin-bottom: 1.5rem;
         }
         .form-group {
@@ -365,7 +380,7 @@
         font-size: 29px;
     }
     .nav-welcome {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         margin-left: 1px;
     }
     .btn-logout {
@@ -421,7 +436,8 @@
         <div class="brand">DAILY LOG SYSTEM</div>
         <div class="nav-actions">
             <div class="nav-welcome">Welcome, Admin</div>
-            <a href="{% url 'logout' %}" class="btn-logout" id="logoutBtn">Logout</a>
+            <a href="{% url 'logout' %}" class="btn-logout" id="logoutBtn">
+                <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 0.6rem;"></i>Logout</a>
         </div>
     </div>
 
@@ -430,25 +446,30 @@
         
         <div style="margin-bottom: 1.5rem; text-align: right;">
             <a href="{% url 'add_staff' %}" class="btn-add">
-                Add Staff
+                <i class="fa-duotone fa-solid fa-user-plus" style="margin-right: 0.6rem;"></i>Add Staff
             </a>
         </div>
         
         <form method="get" class="search-container" action="">
             <div class="form-group" style="flex: 2;">
                 <label class="form-label">Search Staff Member</label>
-                <input type="text" class="input-field" name="staff_name" value="{{ staff_name }}" placeholder="Enter staff name">
-            </div>
+                <input type="text" class="input-field" name="id_card" value="{{ id_card }}" placeholder="Enter staff ID Card Number">            </div>
             <div class="form-group">
                 <label class="form-label">Select Date</label>
                 <input type="date" class="input-field" name="date" value="{{ date }}">
             </div>
-            <button class="btn-primary" type="submit" style="margin-bottom: 1rem;">Search</button>
-            <a href="{% url 'export_logs_excel' %}?staff_name={{ staff_name }}&date={{ date }}" class="btn-secondary" style="margin-bottom: 1rem;">Export to Excel</a>
+            <button class="btn-primary" type="submit" style="margin-bottom: 1rem;">
+                <i class="fa-solid fa-magnifying-glass" style="margin-right: 0.6rem;"></i>Search</button>
+                    <a href="{% url 'export_logs_excel' %}?id_card={{ id_card }}&date={{ date }}" class="btn-secondary" style="margin-bottom: 1rem;">                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V10.5Z" clip-rule="evenodd" />
+                </svg>
+
+                Export to Excel</a>
         </form>
         
         <div class="table-header-section">
-            <button class="btn-view-logs" id="viewLogsBtn">View Logs</button>
+            <button class="btn-view-logs" id="viewLogsBtn">
+                View Logs</button>
         </div>
         
         <div class="table-container" id="logTableContainer">

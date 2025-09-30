@@ -26,5 +26,6 @@ urlpatterns = [
     path('daily_log/', views.daily_log_view, name='daily_log'),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('export_logs_excel/', views.export_logs_excel, name='export_logs_excel'),
+    path('export_staff_logs/', views.export_staff_logs, name='export_staff_logs'),
     path('add_staff/', views.add_staff, name='add_staff'),
 ]

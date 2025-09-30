@@ -26,6 +26,19 @@
     <link rel="icon" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @font-face {
+            font-family: 'Regularfont';
+            src: url("{% static 'logs/Regularfont.ttf' %}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Boldfont';
+            src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            color: black;
+        }
         body {
             background: black;
             background-image: url("{% static 'logs/background.ico' %}");   
@@ -34,7 +47,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Regularfont','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .login-container {
             background: white;
@@ -46,6 +59,7 @@
             padding: 2rem;
             min-height: 450px;
             backdrop-filter: blur(5px);
+            position: relative;
         }
         .brand {
             color: #ec3338;
@@ -75,6 +89,12 @@
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-login:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
         .alert {
             padding: 0.75rem 1rem;
@@ -90,6 +110,7 @@
             border-radius: 8px;
             padding: 4px;
             margin-bottom: 1.5rem;
+            font-family: 'Boldfont';
             font-size: 20px;
         }
         .toggle-btn {
@@ -106,6 +127,49 @@
             background: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .mb-6 {
+            font-family: 'Boldfont';
+            font-size: 24px;
+        }
+        
+        /* Loader Styles */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .loader-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .loader-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .loader-gif {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+        .loader-text {
+            font-family: 'Boldfont';
+            color: #333;
+            font-size: 18px;
+        }
+
         @media (max-width: 550px) {
             .login-container {
                 padding: 1rem;
@@ -116,10 +180,28 @@
             .toggle-buttons {
                 font-size: 16px;
             }
+            .loader-content {
+                padding: 1.5rem;
+            }
+            .loader-gif {
+                width: 60px;
+                height: 60px;
+            }
+            .loader-text {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loader Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-content">
+            <img src="{% static 'logs/Fadingline.gif' %}" alt="Loading..." class="loader-gif">
+            <div class="loader-text">Logging in...</div>
+        </div>
+    </div>
+
     <div class="login-container">
         <div class="brand">DAILY LOG SYSTEM</div>
         
@@ -137,8 +219,8 @@
 
         <!-- Employee Login Form -->
         <div id="employeeForm">
-            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">EMPLOYEE LOGIN</h1>
-            <form method="post">
+            <h1 class="text-center mb-6">EMPLOYEE LOGIN</h1>
+            <form method="post" id="employeeLoginForm">
                 {% csrf_token %}
                 <input type="hidden" name="login_type" value="employee">
                 <input 
@@ -148,6 +230,7 @@
                     class="input-field" 
                     required
                     autocomplete="off"
+                    id="employeeIdCard"
                 >
                 <input 
                     type="password" 
@@ -156,10 +239,12 @@
                     class="input-field" 
                     required
                     autocomplete="off"
+                    id="employeePassword"
                 >
                 <button 
                     type="submit" 
                     class="btn-login"
+                    id="employeeLoginBtn"
                 >
                     LOGIN
                 </button>
@@ -169,7 +254,7 @@
         <!-- Admin Login Form (hidden by default) -->
         <div id="adminForm" style="display:none;">
             <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">ADMIN LOGIN</h1>
-            <form method="post">
+            <form method="post" id="adminLoginForm">
                 {% csrf_token %}
                 <input type="hidden" name="login_type" value="admin">
                 <input 
@@ -179,6 +264,7 @@
                     class="input-field" 
                     required
                     autocomplete="off"
+                    id="adminId"
                 >
                 <input 
                     type="password" 
@@ -187,10 +273,12 @@
                     class="input-field" 
                     required
                     autocomplete="off"
+                    id="adminPassword"
                 >
                 <button 
                     type="submit" 
                     class="btn-login"
+                    id="adminLoginBtn"
                 >
                   LOGIN
                 </button>
@@ -198,37 +286,89 @@
         </div>
     </div>
 
-    <script>
-        // Toggle between Admin and Employee login
-        const adminBtn = document.getElementById('adminBtn');
-        const employeeBtn = document.getElementById('employeeBtn');
-        const adminForm = document.getElementById('adminForm');
-        const employeeForm = document.getElementById('employeeForm');
-        
-        adminBtn.addEventListener('click', () => {
-            adminBtn.classList.add('active');
-            employeeBtn.classList.remove('active');
-            adminForm.style.display = 'block';
-            employeeForm.style.display = 'none';
-        });
-        
-        employeeBtn.addEventListener('click', () => {
-            employeeBtn.classList.add('active');
-            adminBtn.classList.remove('active');
-            employeeForm.style.display = 'block';
-            adminForm.style.display = 'none';
-        });
+<script>
+    // Toggle between Admin and Employee login
+    const adminBtn = document.getElementById('adminBtn');
+    const employeeBtn = document.getElementById('employeeBtn');
+    const adminForm = document.getElementById('adminForm');
+    const employeeForm = document.getElementById('employeeForm');
+    
+    adminBtn.addEventListener('click', () => {
+        adminBtn.classList.add('active');
+        employeeBtn.classList.remove('active');
+        adminForm.style.display = 'block';
+        employeeForm.style.display = 'none';
+    });
+    
+    employeeBtn.addEventListener('click', () => {
+        employeeBtn.classList.add('active');
+        adminBtn.classList.remove('active');
+        employeeForm.style.display = 'block';
+        adminForm.style.display = 'none';
+    });
 
-        // Auto-dismiss alert messages after 3 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 500);
-                }, 1500);
-            });
+    // Loader functionality
+    const loaderOverlay = document.getElementById('loaderOverlay');
+    const employeeLoginForm = document.getElementById('employeeLoginForm');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const employeeLoginBtn = document.getElementById('employeeLoginBtn');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+
+    function showLoader() {
+        loaderOverlay.classList.add('active');
+        // Disable both login buttons to prevent multiple submissions
+        employeeLoginBtn.disabled = true;
+        adminLoginBtn.disabled = true;
+        
+        // Force a reflow to ensure the loader is visible
+        void loaderOverlay.offsetWidth;
+    }
+
+    function hideLoader() {
+        loaderOverlay.classList.remove('active');
+        employeeLoginBtn.disabled = false;
+        adminLoginBtn.disabled = false;
+    }
+
+    // Employee form submission
+    employeeLoginForm.addEventListener('submit', function(e) {
+        const idCard = document.getElementById('employeeIdCard').value.trim();
+        const password = document.getElementById('employeePassword').value.trim();
+        
+        if (idCard && password) {
+            showLoader();
+            setTimeout(() => {
+            }, 100);
+        } else {
+            e.preventDefault();
+        }
+    });
+
+    // Admin form submission
+    adminLoginForm.addEventListener('submit', function(e) {
+        const adminId = document.getElementById('adminId').value.trim();
+        const password = document.getElementById('adminPassword').value.trim();
+        
+        if (adminId && password) {
+            showLoader();
+            setTimeout(() => {
+            }, 100);
+        } else {
+            e.preventDefault();
+        }
+    });
+
+    // Auto-dismiss alert messages after 3 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 1500);
         });
-    </script>
+    });
+    setTimeout(hideLoader, 10000); 
+</script>
 </body>
 </html>

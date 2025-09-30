@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--*e(y!0-#3u#&7c4!9+v51m_u+=v=d!&7vp25-_jnt$x5orqw)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
-
+# DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'dailylog-production.up.railway.app',
@@ -43,11 +43,11 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # HTTPS settings for production
-if not DEBUG and not any('localhost' in host or '127.0.0.1' in host for host in ALLOWED_HOSTS):
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# if not DEBUG and not any('localhost' in host or '127.0.0.1' in host for host in ALLOWED_HOSTS):
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_SSL_REDIRECT = True
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 

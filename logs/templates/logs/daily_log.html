@@ -5,13 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Log - {{ today }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="icon" type="image/png" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @font-face {
+            font-family: 'Regularfont';
+            src: url("{% static 'logs/Regularfont.ttf' %}") format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Boldfont';
+            src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            color: black;
+        }
+        @font-face {
+            font-family: 'Semiboldfont';
+            src: url("{% static 'logs/Semiboldfont.ttf' %}") format('truetype');
+            font-weight: 500;
+            font-style: normal;
+            color: black;
+        }
         body {
             background: #fef2f2;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Regularfont','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 1rem;
         }
         .container {
@@ -51,13 +72,14 @@
             gap: 1rem;
         }
         .user-info span {
-            font-size: 22px;
+            font-size: 27px;
         }
         .btn-logout {
             background-color: #ec3338;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 6px;
+            font-size: 1.2rem;
             font-weight: 500;
             transition: all 0.3s;
         }
@@ -78,13 +100,16 @@
             box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.2);
         }
         .btn-primary {
-            background-color: #ec3338;
+            background-color: #ff5a5f;
             color: white;
             width: 100%;
             padding: 0.75rem;
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #f81212;
         }
         .btn-secondary {
             background-color: #e5e7eb;
@@ -95,6 +120,26 @@
             font-weight: 600;
             transition: all 0.3s;
             margin-bottom: 1rem;
+        }
+        .btn-secondary:hover {
+            background-color: #7b8088;
+            color: white;
+        }
+        .btn-pri {
+            background-color: #06ad39;
+            color: white;
+            width: auto;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+        }
+        .btn-pri:hover {
+            background-color: #059631;
+            color: white;
+            text-decoration: none;
         }
         .log-table {
             width: 100%;
@@ -188,6 +233,13 @@
         .mt-6 {
             margin-top: 1.5rem;
         }
+        .mb-6 {
+            font-family: 'Regularfont';
+        }
+        .mb-2 {
+            font-family: 'Boldfont';
+            font-size: 21px;
+        }
         .mt-0 {
             margin-top: 0;
         }
@@ -198,13 +250,59 @@
             padding-left: 2rem;
             padding-right: 2rem;
         }
+        textarea.input-field {
+            resize: none;
+        }
         .text-center {
             text-align: center;
+            font-family: 'Boldfont';
         }
         .text-gray-700 {
             font-size: 1.4rem;
             font-weight: 600;  
         }
+        
+        /* Save Entry Loader Styles */
+        .save-entry-loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .save-entry-loader-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .save-entry-loader-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .save-entry-loader-gif {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+        .save-entry-loader-text {
+            font-family: 'Boldfont';
+            color: #333;
+            font-size: 18px;
+        }
+        .hidden {
+            display: none;
+        }
+
         @media (max-width: 770px) {
             .header {
                 flex-direction: column;
@@ -337,10 +435,30 @@
             .md\\:mt-0 {
                 margin-top: 0.5rem;
             }
+            
+            /* Mobile styles for loader */
+            .save-entry-loader-content {
+                padding: 1.5rem;
+            }
+            .save-entry-loader-gif {
+                width: 60px;
+                height: 60px;
+            }
+            .save-entry-loader-text {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loader for Save Entry -->
+    <div class="save-entry-loader-overlay" id="saveEntryLoaderOverlay">
+        <div class="save-entry-loader-content">
+            <img src="{% static 'logs/Fadingline.gif' %}" alt="Saving..." class="save-entry-loader-gif">
+            <div class="save-entry-loader-text">Saving...</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="brand">
@@ -350,15 +468,15 @@
             <div class="user-info">
                 <span class="welcome-desktop">Welcome, {{ user.first_name }} {{ user.last_name }}</span>
                 <span class="welcome-mobile">Welcome, {{ user.first_name }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 0.6rem;"></i>Logout</a>
             </div>
         </div>
         
-        <!-- Date Picker Section -->
         <div class="date-picker-section">
             <form method="get" class="flex flex-col md:flex-row gap-4 items-center">
                 <div class="w-full md:w-auto">
-                    <label class="block text-gray-700 mb-2">Select Date</label>
+                    <label class="block mb-2">Select Date</label>
                     <input 
                         type="date" 
                         name="date" 
@@ -368,26 +486,23 @@
                         max="{% now 'Y-m-d' %}"
                     >
                 </div>
-                <button 
+                <button
                     type="submit" 
                     class="btn-primary md:w-auto mt-6 md:mt-0 px-8"
-                    style="background-color: #4b5563; margin-top: 2rem;"
+                    style="background-color: #4b5563; margin-top: 1.5rem;"
                 >
-                    SEARCH
+                    <i class="fa-solid fa-magnifying-glass" style="margin-right: 0.6rem;"></i> SEARCH
                 </button>
-                <!-- {% if selected_date != today %}
-                <a 
-                    href="{% url 'daily_log' %}" 
-                    class="btn-secondary md:w-auto mt-2 md:mt-0 px-8 text-center"
-                    style="margin-top: 3rem;"
-                >
-                    VIEW TODAY
-                </a>
-                {% endif %} -->
+                    <a href="{% url 'export_staff_logs' %}?date={{ selected_date }}" class="btn-pri" style="margin-top: 1.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6" style="margin-right: 0.6rem;">
+                            <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V10.5Z" clip-rule="evenodd" />
+                        </svg>
+                        Export to Excel
+                    </a>  
             </form>
         </div>
         
-        <h1 class="font-bold text-center text-gray-800 mb-6">DAILY LOG FOR {{ today|upper }}</h1>
+        <h1 class="text-center mb-6">DAILY LOG FOR {{ today|upper }}</h1>
         
         {% if messages %}
             <div id="toast-container">
@@ -399,12 +514,12 @@
             </div>
         {% endif %}
         
-        <form method="post">
+        <form method="post" id="dailyLogForm">
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label class="block text-gray-700 mb-2">Time Interval</label>
-                    <select name="time_interval" class="select-field" required>
+                    <label class="block mb-2">Time Interval</label>
+                    <select name="time_interval" class="select-field" required id="timeInterval">
                         <option value="">Select Time Interval</option>
                         {% for interval in time_intervals %}
                             <option value="{{ interval }}">{{ interval }}</option>
@@ -413,8 +528,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-gray-700 mb-2">Status</label>
-                    <select name="status" class="select-field">
+                    <label class="block mb-2">Status</label>
+                    <select name="status" class="select-field" id="status">
                         <option value="Ongoing">Ongoing</option>
                         <option value="Pending">Pending</option>
                         <option value="Completed">Completed</option>
@@ -423,21 +538,23 @@
             </div>
             
             <div class="mb-6">
-                <label class="block text-gray-700 mb-2">Description (required)</label>
+                <label class="block mb-2">Description (required)</label>
                 <textarea 
                     name="description" 
                     rows="3" 
                     class="input-field" 
                     required
                     placeholder="Describe what you're working on during this time interval"
+                    id="description"
                 ></textarea>
             </div>
             
             <button 
                 type="submit" 
                 class="btn-primary"
+                id="saveEntryBtn"
             >
-                SAVE ENTRY
+                <i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>SAVE ENTRY
             </button>
         </form>
         
@@ -484,25 +601,66 @@
             </div>
         </div>
     </div>
+<script>
+    // Save Entry Loader functionality
+    const saveEntryLoaderOverlay = document.getElementById('saveEntryLoaderOverlay');
+    const dailyLogForm = document.getElementById('dailyLogForm');
+    const saveEntryBtn = document.getElementById('saveEntryBtn');
 
-    <script>
-        function toggleLogs() {
-            const logsTable = document.getElementById('logsTable');
-            logsTable.classList.toggle('hidden');
+    function showSaveEntryLoader() {
+        saveEntryLoaderOverlay.classList.add('active');
+        saveEntryBtn.disabled = true;
+        saveEntryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 0.7rem;"></i>SAVING...';
+    }
+
+    function hideSaveEntryLoader() {
+        saveEntryLoaderOverlay.classList.remove('active');
+        saveEntryBtn.disabled = false;
+        saveEntryBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>SAVE ENTRY';
+    }
+
+    // Form submission with loader
+    dailyLogForm.addEventListener('submit', function(e) {
+        // Basic validation
+        const timeInterval = document.getElementById('timeInterval').value;
+        const description = document.getElementById('description').value.trim();
+        
+        if (timeInterval && description) {
+            // Prevent immediate form submission
+            e.preventDefault();
+            
+            // Show loader first
+            showSaveEntryLoader();
+            
+            // Small delay to ensure loader is visible, then submit
+            setTimeout(() => {
+                // Remove the event listener to prevent infinite loop
+                dailyLogForm.removeEventListener('submit', arguments.callee);
+                // Submit the form
+                dailyLogForm.submit();
+            }, 100);
         }
+    });
 
-        window.addEventListener('DOMContentLoaded', function() {
-            const toasts = document.querySelectorAll('.toast');
-            toasts.forEach((toast, i) => {
+    function toggleLogs() {
+        const logsTable = document.getElementById('logsTable');
+        logsTable.classList.toggle('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach((toast, i) => {
+            setTimeout(() => {
+                toast.classList.add('show');
                 setTimeout(() => {
-                    toast.classList.add('show');
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                        setTimeout(() => toast.remove(), 400);
-                    }, 2500);
-                }, 200 * i); 
-            });
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 2500);
+            }, 200 * i); 
         });
-    </script>
+        
+        hideSaveEntryLoader();
+    });
+</script>
 </body>
 </html>

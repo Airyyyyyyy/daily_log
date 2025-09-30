@@ -11,7 +11,7 @@ import io
 from logs.mongo_models import User
 from logs.forms import StaffRegistrationForm
 from mongoengine.queryset.visitor import Q
-from logs.mongo_models import DailyLog, EmployeeProfile, User as MongoUser  # MongoEngine models
+from logs.mongo_models import DailyLog, EmployeeProfile, User as MongoUser
 
 
 def login_view(request):
@@ -32,13 +32,13 @@ def login_view(request):
             else:
                 messages.error(request, 'Invalid Admin Credentials')
 
-        else:  # Employee login
+        else: 
             id_card_number = request.POST.get('id_card')
             password = request.POST.get('password')
 
             try:
                 profile = EmployeeProfile.objects.get(id_card_number=id_card_number)
-                mongo_user = profile.user  # MongoEngine User
+                mongo_user = profile.user 
 
                 # Match with Django user (for session/auth)
                 from django.contrib.auth.models import User as DjangoUser
@@ -55,10 +55,9 @@ def login_view(request):
 
     return render(request, 'logs/login.html')
 
-
 @login_required
 def admin_dashboard(request):
-    staff_name = request.GET.get('staff_name', '')
+    id_card = request.GET.get('id_card', '')
     date = request.GET.get('date', '')
 
     if not date:
@@ -66,16 +65,18 @@ def admin_dashboard(request):
 
     logs = DailyLog.objects(date=date)
 
-    if staff_name:
-        mongo_users = MongoUser.objects(
-            Q(first_name__iexact=staff_name) |
-            Q(last_name__iexact=staff_name)
-        )
-        logs = logs.filter(employee__in=mongo_users)
+    if id_card:
+        try:
+            profile = EmployeeProfile.objects.get(id_card_number=id_card)
+            mongo_user = profile.user
+            logs = logs.filter(employee=mongo_user)
+        except EmployeeProfile.DoesNotExist:
+            logs = DailyLog.objects.none()
+            messages.error(request, f'No staff found with ID Card number: {id_card}')
 
     context = {
         'logs': logs.order_by('-date', 'time_interval'),
-        'staff_name': staff_name,
+        'id_card': id_card,
         'date': date,
     }
     return render(request, 'logs/admin_dashboard.html', context)
@@ -169,19 +170,23 @@ def generate_time_intervals(date):
             intervals.append(interval_str)
     return intervals
 
+@login_required
 def export_logs_excel(request):
     logs = DailyLog.objects()
 
-    staff_name = request.GET.get('staff_name', '')
+    id_card = request.GET.get('id_card', '')
     date = request.GET.get('date', '')
 
-    if staff_name:
-        mongo_users = MongoUser.objects(
-            Q(username__icontains=staff_name) |
-            Q(first_name__icontains=staff_name) |
-            Q(last_name__icontains=staff_name)
-        )
-        logs = logs.filter(employee__in=mongo_users)
+    staff_name_for_filename = ""
+    
+    if id_card:
+        try:
+            profile = EmployeeProfile.objects.get(id_card_number=id_card)
+            mongo_user = profile.user
+            logs = logs.filter(employee=mongo_user)
+            staff_name_for_filename = f"{mongo_user.first_name}_{mongo_user.last_name}" if mongo_user.first_name and mongo_user.last_name else mongo_user.username
+        except EmployeeProfile.DoesNotExist:
+            logs = DailyLog.objects.none()
 
     if date:
         logs = logs.filter(date=date)
@@ -208,8 +213,15 @@ def export_logs_excel(request):
     wb.save(output)
     output.seek(0)
 
-    export_date = date if date else timezone.now().date().isoformat()
-    filename = f"staff_logs_{export_date}.xlsx"
+    # Generate filename based on whether it's for a specific staff or for the day
+    if staff_name_for_filename and date:
+        filename = f"logs_{staff_name_for_filename}_{date}.xlsx"
+    elif staff_name_for_filename:
+        filename = f"logs_{staff_name_for_filename}_{timezone.now().date().isoformat()}.xlsx"
+    elif date:
+        filename = f"all_staff_logs_{date}.xlsx"
+    else:
+        filename = f"all_staff_logs_{timezone.now().date().isoformat()}.xlsx"
 
     response = HttpResponse(
         output.read(),
@@ -218,6 +230,104 @@ def export_logs_excel(request):
     response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
+@login_required
+def export_staff_logs(request):
+    # Get filter parameters from request
+    staff_name = request.GET.get('staff_name', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
+    date = request.GET.get('date', '') 
+    
+    # Get the current logged-in user's first name
+    current_user = request.user
+    user_first_name = current_user.first_name if current_user.first_name else current_user.username
+    
+    # Start with all logs
+    logs = DailyLog.objects().order_by('-date', 'employee__first_name', 'time_interval')
+    
+    if staff_name:
+        mongo_users = MongoUser.objects(
+            Q(username__icontains=staff_name) |
+            Q(first_name__icontains=staff_name) |
+            Q(last_name__icontains=staff_name)
+        )
+        logs = logs.filter(employee__in=mongo_users)
+    
+    if date:
+        logs = logs.filter(date=date)
+    elif start_date and end_date:
+        logs = logs.filter(date__gte=start_date, date__lte=end_date)
+    
+    # Create Excel workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Staff Daily Logs"
+    
+    headers = ['Staff Name', 'Staff ID', 'Date', 'Time Interval', 'Description', 'Status', 'Entry Created']
+    ws.append(headers)
+    
+    # Add data rows
+    for log in logs:
+        staff_name_val = "Unknown"
+        staff_id_val = "N/A"
+        
+        if log.employee:
+            staff_name_val = f"{log.employee.first_name} {log.employee.last_name}".strip()
+            try:
+                profile = EmployeeProfile.objects.get(user=log.employee)
+                staff_id_val = profile.id_card_number
+            except EmployeeProfile.DoesNotExist:
+                staff_id_val = log.employee.username
+        
+        # Format the date created if available
+        created_at = log.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(log, 'created_at') and log.created_at else "N/A"
+        
+        ws.append([
+            staff_name_val,
+            staff_id_val,
+            str(log.date),
+            log.time_interval,
+            log.description,
+            log.status,
+            created_at
+        ])
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = column[0].column_letter
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
+    # Create response
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    # Generate filename with current user's first name
+    if date:
+        filename = f"staff_logs_exported_by_{user_first_name}_{date}.xlsx"
+    elif start_date and end_date:
+        filename = f"staff_logs_exported_by_{user_first_name}_{start_date}_to_{end_date}.xlsx"
+    elif staff_name:
+        filename = f"staff_logs_exported_by_{user_first_name}_{staff_name}.xlsx"
+    else:
+        filename = f"staff_logs_exported_by_{user_first_name}_{timezone.now().date().isoformat()}.xlsx"
+    
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+@login_required
 def add_staff(request):
     if request.method == 'POST':
         form = StaffRegistrationForm(request.POST)
