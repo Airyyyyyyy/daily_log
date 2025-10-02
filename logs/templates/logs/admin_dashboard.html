@@ -20,14 +20,11 @@
         @font-face {
             font-family: 'Boldfont';
             src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
-            font-weight: bold;
-            font-style: normal;
-            color: black;
         }
         body {
             background: #fef2f2;
             min-height: 100vh;
-            font-family: 'Regularfont','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Regularfont';
             margin: 0;
         }
         .navbar {
@@ -95,7 +92,6 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 8px;
-            font-weight: 500;
             border: none;
             cursor: pointer;
             font-size: 1rem;
@@ -110,7 +106,6 @@
             color: white;
             padding: 1.25rem 2rem;
             border-radius: 8px;
-            font-weight: 600;
             border: none;
             cursor: pointer;
             font-size: 20px;
@@ -127,7 +122,6 @@
             color: white;
             padding: 1.25rem 2rem;
             border-radius: 8px;
-            font-weight: 600;
             border: none;
             cursor: pointer;
             font-size: 20px;
@@ -146,7 +140,6 @@
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            font-weight: 600;
             border: none;
             cursor: pointer;
             font-size: 20px;
@@ -163,7 +156,6 @@
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            font-weight: 600;
             border: none;
             cursor: pointer;
             font-size: 21px;
@@ -384,7 +376,7 @@
         margin-left: 1px;
     }
     .btn-logout {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
         padding: 1rem 2.5rem;
         max-width: 180px;
     }
@@ -431,7 +423,7 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
+    <div class="navbar">    
         <img src="{% static 'logs/kadick.ico' %}" alt="Brand Logo" class="brand-logo">
         <div class="brand">DAILY LOG SYSTEM</div>
         <div class="nav-actions">

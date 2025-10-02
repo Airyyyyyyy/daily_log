@@ -18,16 +18,11 @@
         @font-face {
             font-family: 'Boldfont';
             src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
-            font-weight: bold;
-            font-style: normal;
-            color: black;
         }
         @font-face {
             font-family: 'Semiboldfont';
             src: url("{% static 'logs/Semiboldfont.ttf' %}") format('truetype');
-            font-weight: 500;
             font-style: normal;
-            color: black;
         }
         body {
             background: #fef2f2;
@@ -125,6 +120,19 @@
             background-color: #7b8088;
             color: white;
         }
+        .btn-search {
+            background-color: #4b5563; 
+            margin-top: 1.5rem; 
+            padding: 0.75rem;
+            width: auto; 
+            color: white; 
+            border-radius: 8px;
+            font-size: 18px; 
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         .btn-pri {
             background-color: #06ad39;
             color: white;
@@ -132,9 +140,12 @@
             padding: 0.75rem;
             border-radius: 8px;
             font-size: 18px;
+            cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
             display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-pri:hover {
             background-color: #059631;
@@ -253,9 +264,11 @@
         textarea.input-field {
             resize: none;
         }
-        .text-center {
+        .log-date {
             text-align: center;
             font-family: 'Boldfont';
+            margin-bottom: 6px;
+            font-size: 25px;
         }
         .text-gray-700 {
             font-size: 1.4rem;
@@ -344,8 +357,8 @@
                 padding: 1.5rem;
             }
             
-            h1.text-center {
-                font-size: 1rem;
+            .log-date {
+                font-size: 1.15rem;
                 margin-bottom: 1rem;
             }
             
@@ -424,18 +437,12 @@
                 margin-top: 0.5rem !important;
             }
             
-            .md\\:w-auto {
+            .btn-search {
                 width: 100%;
             }
-            
-            .md\\:flex-row {
-                flex-direction: column;
+            .btn-pri {
+                width: 100%;
             }
-            
-            .md\\:mt-0 {
-                margin-top: 0.5rem;
-            }
-            
             /* Mobile styles for loader */
             .save-entry-loader-content {
                 padding: 1.5rem;
@@ -488,8 +495,7 @@
                 </div>
                 <button
                     type="submit" 
-                    class="btn-primary md:w-auto mt-6 md:mt-0 px-8"
-                    style="background-color: #4b5563; margin-top: 1.5rem;"
+                    class="btn-search"
                 >
                     <i class="fa-solid fa-magnifying-glass" style="margin-right: 0.6rem;"></i> SEARCH
                 </button>
@@ -502,7 +508,7 @@
             </form>
         </div>
         
-        <h1 class="text-center mb-6">DAILY LOG FOR {{ today|upper }}</h1>
+        <h1 class="log-date">DAILY LOG FOR {{ today|upper }}</h1>
         
         {% if messages %}
             <div id="toast-container">
