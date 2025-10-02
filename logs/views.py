@@ -133,12 +133,17 @@ def daily_log_view(request):
 
     # Format date with ordinal suffix
     day = selected_date.day
+    # Remove leading zero from day
+    day_str = str(day).lstrip('0')
+    
     if 4 <= day <= 20 or 24 <= day <= 30:
         suffix = "th"
     else:
         suffix = ["st", "nd", "rd"][day % 10 - 1]
     
-    formatted_date = selected_date.strftime(f'%d{suffix} %B, %Y')
+    # Format the month and year
+    month_year = selected_date.strftime('%B, %Y')
+    formatted_date = f"{day_str}{suffix} {month_year}"
 
     context = {
         'time_intervals': time_intervals,
