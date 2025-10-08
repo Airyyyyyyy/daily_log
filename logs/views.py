@@ -23,6 +23,22 @@ def login_view(request):
             password = request.POST.get('password')
 
             if admin_id == 'admin' and password == 'admin123':
+                # Create or get Django user for admin
+                django_user, created = DjangoUser.objects.get_or_create(
+                    username='admin',
+                    defaults={
+                        'email': 'admin@example.com',
+                        'first_name': 'Admin',
+                        'last_name': 'User',
+                        'is_staff': True,
+                        'is_superuser': True
+                    }
+                )
+                if created:
+                    django_user.set_password('admin123')
+                    django_user.save()
+
+                # Authenticate and login using Django
                 user = authenticate(request, username='admin', password='admin123')
                 if user:
                     login(request, user)
@@ -37,19 +53,34 @@ def login_view(request):
             password = request.POST.get('password')
 
             try:
+                # Find employee profile by ID card number
                 profile = EmployeeProfile.objects.get(id_card_number=id_card_number)
-                mongo_user = profile.user 
+                mongo_user = profile.user
 
-                # Match with Django user (for session/auth)
-                from django.contrib.auth.models import User as DjangoUser
-                django_user = DjangoUser.objects.filter(username=mongo_user.username).first()
+                # Check password against MongoDB (plain text comparison)
+                if mongo_user.password == password:
+                    # Create or get Django user for session management
+                    django_user, created = DjangoUser.objects.get_or_create(
+                        username=mongo_user.username,
+                        defaults={
+                            'email': mongo_user.email,
+                            'first_name': mongo_user.first_name,
+                            'last_name': mongo_user.last_name
+                        }
+                    )
+                    if created:
+                        django_user.set_password(password)
+                        django_user.save()
 
-                if django_user:
-                    user = authenticate(request, username=django_user.username, password=password)
+                    # Authenticate and login using Django
+                    user = authenticate(request, username=mongo_user.username, password=password)
                     if user:
                         login(request, user)
                         return redirect('daily_log')
-                messages.error(request, 'Invalid credentials')
+                    else:
+                        messages.error(request, 'Authentication failed')
+                else:
+                    messages.error(request, 'Invalid credentials')
             except EmployeeProfile.DoesNotExist:
                 messages.error(request, 'User does not exist')
 
@@ -237,8 +268,22 @@ def export_logs_excel(request):
 
 @login_required
 def export_staff_logs(request):
+    # Get the current logged-in user's Mongo user
+    mongo_user = MongoUser.objects(username=request.user.username).first()
+    
+    if not mongo_user:
+        messages.error(request, 'User profile not found. Please contact administrator.')
+        return redirect('daily_log')
+    
+    # Get the employee profile to access ID card number
+    try:
+        profile = EmployeeProfile.objects.get(user=mongo_user)
+        id_card_number = profile.id_card_number
+    except EmployeeProfile.DoesNotExist:
+        id_card_number = "N/A"
+        messages.warning(request, 'ID card number not found in profile')
+    
     # Get filter parameters from request
-    staff_name = request.GET.get('staff_name', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     date = request.GET.get('date', '') 
@@ -247,17 +292,10 @@ def export_staff_logs(request):
     current_user = request.user
     user_first_name = current_user.first_name if current_user.first_name else current_user.username
     
-    # Start with all logs
-    logs = DailyLog.objects().order_by('-date', 'employee__first_name', 'time_interval')
+    # Start with logs only for the current user
+    logs = DailyLog.objects(employee=mongo_user).order_by('-date', 'time_interval')
     
-    if staff_name:
-        mongo_users = MongoUser.objects(
-            Q(username__icontains=staff_name) |
-            Q(first_name__icontains=staff_name) |
-            Q(last_name__icontains=staff_name)
-        )
-        logs = logs.filter(employee__in=mongo_users)
-    
+    # Apply date filters
     if date:
         logs = logs.filter(date=date)
     elif start_date and end_date:
@@ -266,35 +304,24 @@ def export_staff_logs(request):
     # Create Excel workbook
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Staff Daily Logs"
+    ws.title = "My Daily Logs"
     
-    headers = ['Staff Name', 'Staff ID', 'Date', 'Time Interval', 'Description', 'Status', 'Entry Created']
+    headers = ['Staff Name', 'ID Card Number', 'Date', 'Time Interval', 'Description', 'Status']
     ws.append(headers)
     
     # Add data rows
     for log in logs:
-        staff_name_val = "Unknown"
-        staff_id_val = "N/A"
-        
-        if log.employee:
-            staff_name_val = f"{log.employee.first_name} {log.employee.last_name}".strip()
-            try:
-                profile = EmployeeProfile.objects.get(user=log.employee)
-                staff_id_val = profile.id_card_number
-            except EmployeeProfile.DoesNotExist:
-                staff_id_val = log.employee.username
-        
-        # Format the date created if available
-        created_at = log.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(log, 'created_at') and log.created_at else "N/A"
-        
+        staff_name_val = f"{mongo_user.first_name} {mongo_user.last_name}".strip()
+        if not staff_name_val:
+            staff_name_val = mongo_user.username
+            
         ws.append([
             staff_name_val,
-            staff_id_val,
-            str(log.date),
+            id_card_number,
+            log.date.strftime('%Y-%m-%d') if hasattr(log, 'date') and log.date else '',
             log.time_interval,
             log.description,
-            log.status,
-            created_at
+            log.status,           
         ])
     
     # Auto-adjust column widths
@@ -315,15 +342,13 @@ def export_staff_logs(request):
     wb.save(output)
     output.seek(0)
     
-    # Generate filename with current user's first name
+    # Generate filename with current user's first name and ID card number
     if date:
-        filename = f"staff_logs_exported_by_{user_first_name}_{date}.xlsx"
+        filename = f"my_logs_{user_first_name}_{date}.xlsx"
     elif start_date and end_date:
-        filename = f"staff_logs_exported_by_{user_first_name}_{start_date}_to_{end_date}.xlsx"
-    elif staff_name:
-        filename = f"staff_logs_exported_by_{user_first_name}_{staff_name}.xlsx"
+        filename = f"my_logs_{user_first_name}_{start_date}_to_{end_date}.xlsx"
     else:
-        filename = f"staff_logs_exported_by_{user_first_name}_{timezone.now().date().isoformat()}.xlsx"
+        filename = f"my_logs_{user_first_name}_{timezone.now().date().isoformat()}.xlsx"
     
     response = HttpResponse(
         output.read(),
