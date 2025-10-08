@@ -22,17 +22,17 @@ class User(Document):
 
 
 class EmployeeProfile(Document):
-    user = fields.ReferenceField(User, required=True)  # ✅ proper ReferenceField
+    user = fields.ReferenceField(User, required=True) 
     id_card_number = fields.StringField(max_length=20, unique=True, required=True)
 
     meta = {
         'collection': 'logs_employeeprofile',
-        'indexes': ['id_card_number', 'user'],  # ✅ use "user", not "user_id"
+        'indexes': ['id_card_number', 'user'],
         'ordering': ['id_card_number']
     }
 
     def __str__(self):
-        return f"{self.user.username} - {self.id_card_number}"  # ✅ readable
+        return f"{self.user.username} - {self.id_card_number}"
 
 
 class DailyLog(Document):
@@ -42,7 +42,7 @@ class DailyLog(Document):
         ('Completed', 'Completed'),
     ]
 
-    employee = fields.ReferenceField(User, required=True)  # ✅ Reference instead of employee_id
+    employee = fields.ReferenceField(User, required=True) 
     date = fields.DateTimeField(default=datetime.datetime.utcnow)
     time_interval = fields.StringField(max_length=20, required=True)
     description = fields.StringField(required=True)

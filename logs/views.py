@@ -57,7 +57,6 @@ def login_view(request):
                 profile = EmployeeProfile.objects.get(id_card_number=id_card_number)
                 mongo_user = profile.user
 
-                # Check password against MongoDB (plain text comparison)
                 if mongo_user.password == password:
                     # Create or get Django user for session management
                     django_user, created = DjangoUser.objects.get_or_create(
