@@ -385,7 +385,7 @@ def add_staff(request):
                 user = User(
                     username=form.cleaned_data['username'],
                     email=form.cleaned_data['email'],
-                    password=form.cleaned_data['password'],  # Still plain in Mongo, but that's OK for now
+                    password=form.cleaned_data['password'], 
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name']
                 )
