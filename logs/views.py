@@ -368,7 +368,6 @@ def add_staff(request):
     if request.method == 'POST':
         form = StaffRegistrationForm(request.POST)
         if form.is_valid():
-            # Check if username or email already exists in Django or Mongo
             if User.objects(username=form.cleaned_data['username']).first() or DjangoUser.objects.filter(username=form.cleaned_data['username']).exists():
                 messages.error(request, "Username already exists.")
             elif User.objects(email=form.cleaned_data['email']).first() or DjangoUser.objects.filter(email=form.cleaned_data['email']).exists():
