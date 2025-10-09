@@ -113,7 +113,6 @@ def admin_dashboard(request):
 
 @login_required
 def daily_log_view(request):
-    # Get the selected date from request, default to today
     selected_date_str = request.GET.get('date', '')
     if selected_date_str:
         try:
@@ -122,6 +121,10 @@ def daily_log_view(request):
             selected_date = timezone.now().date()
     else:
         selected_date = timezone.now().date()
+    
+    # Check if the selected date is in the past
+    today = timezone.now().date()
+    is_previous_day = selected_date < today
     
     time_intervals = generate_time_intervals(selected_date)
 
@@ -136,16 +139,20 @@ def daily_log_view(request):
             'today': selected_date.strftime('%d %B, %Y'),
             'selected_date': selected_date.isoformat(),
             'user': {'first_name': 'User', 'last_name': ''},
+            'is_previous_day': is_previous_day,
         }
         return render(request, 'logs/daily_log.html', context)
 
     if request.method == 'POST':
+        if is_previous_day:
+            messages.error(request, 'Cannot modify logs for previous days.')
+            return redirect(f'{request.path}?date={selected_date}')
+        
         time_interval = request.POST.get('time_interval')
         description = request.POST.get('description')
         status = request.POST.get('status')
 
         if time_interval and description and mongo_user:
-            # Use the selected date for the log entry
             DailyLog.objects(
                 employee=mongo_user,
                 date=selected_date,
@@ -163,7 +170,6 @@ def daily_log_view(request):
 
     # Format date with ordinal suffix
     day = selected_date.day
-    # Remove leading zero from day
     day_str = str(day).lstrip('0')
     
     if 4 <= day <= 20 or 24 <= day <= 30:
@@ -181,6 +187,7 @@ def daily_log_view(request):
         'today': formatted_date,
         'selected_date': selected_date.isoformat(),
         'user': mongo_user,
+        'is_previous_day': is_previous_day,
     }
     return render(request, 'logs/daily_log.html', context)
 

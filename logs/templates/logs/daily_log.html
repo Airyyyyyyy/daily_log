@@ -275,7 +275,6 @@
             font-weight: 600;  
         }
         
-        /* Save Entry Loader Styles */
         .save-entry-loader-overlay {
             position: fixed;
             top: 0;
@@ -314,6 +313,29 @@
         }
         .hidden {
             display: none;
+        }
+
+        .form-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .disabled-message {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #92400e;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        .btn-primary:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .btn-primary:disabled:hover {
+            background-color: #9ca3af;
         }
 
         @media (max-width: 770px) {
@@ -443,7 +465,6 @@
             .btn-pri {
                 width: 100%;
             }
-            /* Mobile styles for loader */
             .save-entry-loader-content {
                 padding: 1.5rem;
             }
@@ -453,6 +474,11 @@
             }
             .save-entry-loader-text {
                 font-size: 16px;
+            }
+            .disabled-message {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
             }
         }
     </style>
@@ -510,6 +536,13 @@
         
         <h1 class="log-date">DAILY LOG FOR {{ today|upper }}</h1>
         
+        {% if is_previous_day %}
+        <div class="disabled-message">
+            <i class="fa-solid fa-lock" style="margin-right: 0.5rem;"></i>
+            Viewing mode only - Logs for previous days cannot be modified
+        </div>
+        {% endif %}
+        
         {% if messages %}
             <div id="toast-container">
                 {% for message in messages %}
@@ -520,12 +553,12 @@
             </div>
         {% endif %}
         
-        <form method="post" id="dailyLogForm">
+        <form method="post" id="dailyLogForm" {% if is_previous_day %}class="form-disabled"{% endif %}>
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block mb-2">Time Interval</label>
-                    <select name="time_interval" class="select-field" required id="timeInterval">
+                    <select name="time_interval" class="select-field" required id="timeInterval" {% if is_previous_day %}disabled{% endif %}>
                         <option value="">Select Time Interval</option>
                         {% for interval in time_intervals %}
                             <option value="{{ interval }}">{{ interval }}</option>
@@ -535,7 +568,7 @@
                 
                 <div>
                     <label class="block mb-2">Status</label>
-                    <select name="status" class="select-field" id="status">
+                    <select name="status" class="select-field" id="status" {% if is_previous_day %}disabled{% endif %}>
                         <option value="Ongoing">Ongoing</option>
                         <option value="Pending">Pending</option>
                         <option value="Completed">Completed</option>
@@ -552,6 +585,7 @@
                     required
                     placeholder="Describe what you're working on during this time interval"
                     id="description"
+                    {% if is_previous_day %}disabled{% endif %}
                 ></textarea>
             </div>
             
@@ -559,8 +593,10 @@
                 type="submit" 
                 class="btn-primary"
                 id="saveEntryBtn"
+                {% if is_previous_day %}disabled{% endif %}
             >
-                <i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>SAVE ENTRY
+                <i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>
+                {% if is_previous_day %}VIEWING MODE{% else %}SAVE ENTRY{% endif %}
             </button>
         </form>
         
@@ -622,11 +658,18 @@
     function hideSaveEntryLoader() {
         saveEntryLoaderOverlay.classList.remove('active');
         saveEntryBtn.disabled = false;
-        saveEntryBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>SAVE ENTRY';
+        saveEntryBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 0.7rem;"></i>' + 
+            (dailyLogForm.classList.contains('form-disabled') ? 'VIEWING MODE' : 'SAVE ENTRY');
     }
 
     // Form submission with loader
     dailyLogForm.addEventListener('submit', function(e) {
+        // Check if form is disabled (previous day)
+        if (dailyLogForm.classList.contains('form-disabled')) {
+            e.preventDefault();
+            return;
+        }
+        
         // Basic validation
         const timeInterval = document.getElementById('timeInterval').value;
         const description = document.getElementById('description').value.trim();
