@@ -177,4 +177,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/logs/login/'
 
-django_heroku.settings(locals(), databases=False)  
+# django_heroku.settings(locals(), databases=False)  
