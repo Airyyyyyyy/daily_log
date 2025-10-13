@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+from decouple import config
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--*e(y!0-#3u#&7c4!9+v51m_u+=v=d!&7vp25-_jnt$x5orqw)'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure--*e(y!0-#3u#&7c4!9+v51m_u+=v=d!&7vp25-_jnt$x5orqw)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     'dailylog-production.up.railway.app',
@@ -32,6 +35,7 @@ ALLOWED_HOSTS = [
     '.onrender.com', 
     '127.0.0.1',
     'localhost',
+    '.herokuapp.com',
 ]
 
 # CSRF Trusted Origins
@@ -39,6 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://dailylog-production.up.railway.app',
     'https://*.railway.app',
     'https://*.onrender.com',
+    'kttps://*.herokuapp.com',
 ]
 
 # HTTPS settings for production
@@ -62,10 +67,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -103,9 +108,11 @@ DATABASES = {
 
 # MongoDB connection
 from mongoengine import connect
+import urllib.parse
 
-MONGODB_NAME = "DailyLog"
-MONGODB_HOST = "mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot"
+MONGODB_NAME = config('MONGODB_NAME', default='DailyLog')
+MONGODB_HOST = config('MONGODB_URI', default='mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot')
+
 
 try:
     connect(
@@ -169,3 +176,5 @@ WHITENOISE_ROOT = STATIC_ROOT
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/logs/login/'
+
+django_heroku.settings(locals(), databases=False)  
