@@ -43,7 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://dailylog-production.up.railway.app',
     'https://*.railway.app',
     'https://*.onrender.com',
-    'kttps://*.herokuapp.com',
+    'https://*.herokuapp.com',
 ]
 
 # HTTPS settings for production
@@ -176,5 +176,3 @@ WHITENOISE_ROOT = STATIC_ROOT
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/logs/login/'
-
-# django_heroku.settings(locals(), databases=False)  
