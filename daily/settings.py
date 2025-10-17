@@ -106,10 +106,9 @@ DATABASES = {
 
 # MongoDB connection
 from mongoengine import connect
-import urllib.parse
 
 MONGODB_NAME = config('MONGODB_NAME', default='DailyLog')
-MONGODB_HOST = config('MONGODB_URI', default='mongodb+srv://abdulmaleeql:HyWrwrkaH90DQLGi@telegrambot.zttkoj8.mongodb.net/?retryWrites=true&w=majority&appName=Telegrambot')
+MONGODB_HOST = config('MONGODB_URI', default='mongodb+srv://kadickUser:<db_password>@cluster0.5qfmw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 
 
 try:
