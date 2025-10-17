@@ -107,8 +107,8 @@ DATABASES = {
 # MongoDB connection
 from mongoengine import connect
 
-MONGODB_NAME = config('MONGODB_NAME', default='DailyLog')
-MONGODB_HOST = config('MONGODB_URI', default='mongodb+srv://kadickUser:<db_password>@cluster0.5qfmw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+MONGODB_NAME = config('MONGODB_NAME')
+MONGODB_HOST = config('MONGODB_URI')
 
 
 try:
