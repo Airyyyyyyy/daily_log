@@ -18,6 +18,7 @@ migrate_to_mongo.py: Script to migrate data from SQLite to MongoDB
 venv/: Python virtual environment directory
 
 Main Django Project Configuration
+
 DAiLY/ & daily/: Main project directories containing:
 
 settings.py: Project configuration and settings
@@ -31,6 +32,7 @@ asgi.py: ASGI configuration for async support
 __init__.py: Python package initialization
 
 Core Application Components
+
 logs/: Main Django app directory containing:
 
 models.py: Database models for SQLite
@@ -46,6 +48,7 @@ admin.py: Admin interface configuration
 migrations/: Database migration files
 
 Templates (Frontend)
+
 templates/logs/: HTML templates including:
 
 login.html: User authentication page
