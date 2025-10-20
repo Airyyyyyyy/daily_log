@@ -396,10 +396,11 @@ def add_staff(request):
                 )
                 profile.save()
                 messages.success(request, "Staff added successfully!")
-                return redirect('add_staff')
-    else:
-        form = StaffRegistrationForm()
-    return render(request, 'logs/add_staff.html', {'form': form})
+                return redirect('admin_dashboard')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    
+    return redirect('admin_dashboard')
 
 @login_required
 def logout_view(request):

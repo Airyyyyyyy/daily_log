@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Login - Daily Log System</title>
     
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Secure login portal for Kadick Integrated Limited's Daily Log System">
+    <meta name="keywords" content="employee login, admin login, daily log, kadick">
+    
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Daily Log System - Kadick Integrated Limited">
     <meta property="og:description" content="Streamline your daily workforce management with our intuitive employee tracking system.">
     <meta property="og:type" content="website">
@@ -36,179 +41,272 @@
             src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
             font-style: normal;
         }
+        
+        :root {
+            --primary-color: #ec3338;
+            --primary-dark: #c42a2e;
+            --primary-light: #f05c60;
+            --accent-color: #1a56db;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #d1d5db;
+            --error-color: #dc2626;
+            --success-color: #059669;
+            --background-light: #f9fafb;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            background: black;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             background-image: url("{% static 'logs/background.ico' %}");   
             background-size: 20%;               
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Regularfont','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Regularfont', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 1rem;
         }
+        
         .login-container {
             background: white;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 520px;
-            font-size: 20px;
-            padding: 2rem;
-            min-height: 450px;
+            max-width: 480px;
+            font-size: 16px;
+            padding: 2.5rem;
             backdrop-filter: blur(5px);
             position: relative;
+            overflow: hidden;
         }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+        }
+        
         .brand {
-            color: #ec3338;
+            color: var(--primary-color);
             font-weight: 700;
+            font-size: 1.75rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-family: 'Boldfont';
+            letter-spacing: 0.5px;
+        }
+        
+        .brand-subtitle {
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        .toggle-buttons {
+            display: flex;
+            background-color: var(--background-light);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 2rem;
+            font-family: 'Boldfont';
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-light);
+        }
+        
+        .toggle-btn.active {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .form-title {
+            font-family: 'Boldfont';
             font-size: 1.5rem;
             text-align: center;
             margin-bottom: 1.5rem;
+            color: var(--text-dark);
         }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        
         .input-field {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #d1d5db;
+            padding: 0.875rem 1rem;
+            border: 1.5px solid var(--border-color);
             border-radius: 8px;
-            margin-bottom: 1rem;
             transition: all 0.3s;
+            font-size: 1rem;
+            background-color: white;
         }
+        
         .input-field:focus {
             outline: none;
-            border-color: #ec3338;
-            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.15);
         }
+        
+        .input-field.error {
+            border-color: var(--error-color);
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
         .btn-login {
-            background-color: #ec3338;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.875rem;
             border-radius: 8px;
             font-weight: 600;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
-        }
-        .btn-login:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            background-color: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-        .toggle-buttons {
-            display: flex;
-            background-color: #f3f4f6;
-            border-radius: 8px;
-            padding: 4px;
-            margin-bottom: 1.5rem;
-            font-family: 'Boldfont';
-            font-size: 20px;
-        }
-        .toggle-btn {
-            flex: 1;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            background: transparent;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .toggle-btn.active {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .mb-6 {
-            font-family: 'Boldfont';
-            font-size: 24px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 6px rgba(236, 51, 56, 0.2);
         }
         
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+        .btn-login:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 6px 12px rgba(236, 51, 56, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-login:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            background-color: #fef2f2;
+            color: var(--error-color);
+            border: 1px solid #fecaca;
+            font-size: 0.9rem;
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
         }
-        .loader-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .loader-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        
+        .alert::before {
+            content: '!';
+            display: inline-flex;
             align-items: center;
-            min-height: 200px;
-            min-width: 200px;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--error-color);
+            color: white;
+            margin-right: 0.75rem;
+            font-weight: bold;
+            font-size: 0.8rem;
         }
-        .loader-gif {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1rem;
-            display: block;
+        
+        .alert.success {
+            background-color: #f0fdf4;
+            color: var(--success-color);
+            border-color: #bbf7d0;
         }
-        .loader-text {
-            font-family: 'Boldfont';
-            color: #333;
-            font-size: 18px;
+        
+        .alert.success::before {
+            content: '✓';
+            background-color: var(--success-color);
+        }
+        
+        .form-footer {
             text-align: center;
-            margin: 0;
+            margin-top: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
         }
-
+        
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
         @media (max-width: 550px) {
             .login-container {
-                padding: 1rem;
-                font-size: 15px;
-                max-width: fit-content;
-                width: 90%;
-            }
-            .toggle-buttons {
-                font-size: 16px;
-            }
-            .loader-content {
                 padding: 1.5rem;
+                max-width: 100%;
+                width: 100%;
             }
-            .loader-gif {
-                width: 60px;
-                height: 60px;
+            
+            .toggle-buttons {
+                font-size: 14px;
             }
-            .loader-text {
-                font-size: 16px;
+            
+            .toggle-btn {
+                padding: 8px 12px;
+            }
+            
+            .brand {
+                font-size: 1.5rem;
+            }
+            
+            .form-title {
+                font-size: 1.25rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loader Overlay -->
-    <div class="loader-overlay" id="loaderOverlay">
-        <div class="loader-content">
-            <img src="{% static 'logs/Fadingline.gif' %}" alt="Loading..." class="loader-gif">
-            <div class="loader-text">Logging in...</div>
-        </div>
-    </div>
-
     <div class="login-container">
         <div class="brand">DAILY LOG SYSTEM</div>
+        <div class="brand-subtitle">Kadick Integrated Limited</div>
         
         <!-- Admin/Employee Toggle -->
         <div class="toggle-buttons">
@@ -218,34 +316,45 @@
         
         {% if messages %}
             {% for message in messages %}
-                <div class="alert">{{ message }}</div>
+                <div class="alert {% if message.tags == 'success' %}success{% endif %}">{{ message }}</div>
             {% endfor %}
         {% endif %}
 
         <!-- Employee Login Form -->
         <div id="employeeForm">
-            <h1 class="text-center mb-6">EMPLOYEE LOGIN</h1>
+            <h1 class="form-title">EMPLOYEE LOGIN</h1>
             <form method="post" id="employeeLoginForm">
                 {% csrf_token %}
                 <input type="hidden" name="login_type" value="employee">
-                <input 
-                    type="text" 
-                    name="id_card" 
-                    placeholder="ID Card Number" 
-                    class="input-field" 
-                    required
-                    autocomplete="off"
-                    id="employeeIdCard"
-                >
-                <input 
-                    type="password" 
-                    name="password" 
-                    placeholder="Password" 
-                    class="input-field" 
-                    required
-                    autocomplete="off"
-                    id="employeePassword"
-                >
+                
+                <div class="input-group">
+                    <label for="employeeIdCard" class="input-label">ID Card Number</label>
+                    <input 
+                        type="text" 
+                        name="id_card" 
+                        placeholder="Enter your ID card number" 
+                        class="input-field" 
+                        required
+                        autocomplete="off"
+                        id="employeeIdCard"
+                    >
+                    <div class="error-message" id="employeeIdError">Please enter a valid ID card number</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="employeePassword" class="input-label">Password</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        placeholder="Enter your password" 
+                        class="input-field" 
+                        required
+                        autocomplete="off"
+                        id="employeePassword"
+                    >
+                    <div class="error-message" id="employeePasswordError">Please enter your password</div>
+                </div>
+                
                 <button 
                     type="submit" 
                     class="btn-login"
@@ -258,28 +367,39 @@
 
         <!-- Admin Login Form (hidden by default) -->
         <div id="adminForm" style="display:none;">
-            <h1 class="text-center mb-6">ADMIN LOGIN</h1>
+            <h1 class="form-title">ADMIN LOGIN</h1>
             <form method="post" id="adminLoginForm">
                 {% csrf_token %}
                 <input type="hidden" name="login_type" value="admin">
-                <input 
-                    type="text" 
-                    name="admin_id" 
-                    placeholder="Admin Id" 
-                    class="input-field" 
-                    required
-                    autocomplete="off"
-                    id="adminId"
-                >
-                <input 
-                    type="password" 
-                    name="password" 
-                    placeholder="Password" 
-                    class="input-field" 
-                    required
-                    autocomplete="off"
-                    id="adminPassword"
-                >
+                
+                <div class="input-group">
+                    <label for="adminId" class="input-label">Admin ID</label>
+                    <input 
+                        type="text" 
+                        name="admin_id" 
+                        placeholder="Enter your admin ID" 
+                        class="input-field" 
+                        required
+                        autocomplete="off"
+                        id="adminId"
+                    >
+                    <div class="error-message" id="adminIdError">Please enter a valid admin ID</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="adminPassword" class="input-label">Password</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        placeholder="Enter your password" 
+                        class="input-field" 
+                        required
+                        autocomplete="off"
+                        id="adminPassword"
+                    >
+                    <div class="error-message" id="adminPasswordError">Please enter your password</div>
+                </div>
+                
                 <button 
                     type="submit" 
                     class="btn-login"
@@ -303,6 +423,8 @@
         employeeBtn.classList.remove('active');
         adminForm.style.display = 'block';
         employeeForm.style.display = 'none';
+        // Clear any previous error states
+        clearErrors();
     });
     
     employeeBtn.addEventListener('click', () => {
@@ -310,70 +432,135 @@
         adminBtn.classList.remove('active');
         employeeForm.style.display = 'block';
         adminForm.style.display = 'none';
+        // Clear any previous error states
+        clearErrors();
     });
 
-    // Loader functionality
-    const loaderOverlay = document.getElementById('loaderOverlay');
-    const employeeLoginForm = document.getElementById('employeeLoginForm');
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    const employeeLoginBtn = document.getElementById('employeeLoginBtn');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-
-    function showLoader() {
-        loaderOverlay.classList.add('active');
-        // Disable both login buttons to prevent multiple submissions
-        employeeLoginBtn.disabled = true;
-        adminLoginBtn.disabled = true;
+    // Form validation functions
+    function validateEmployeeForm() {
+        let isValid = true;
+        const idCard = document.getElementById('employeeIdCard').value.trim();
+        const password = document.getElementById('employeePassword').value.trim();
+        const idError = document.getElementById('employeeIdError');
+        const passwordError = document.getElementById('employeePasswordError');
         
-        // Force a reflow to ensure the loader is visible
-        void loaderOverlay.offsetWidth;
+        // Clear previous errors
+        idError.style.display = 'none';
+        document.getElementById('employeeIdCard').classList.remove('error');
+        passwordError.style.display = 'none';
+        document.getElementById('employeePassword').classList.remove('error');
+        
+        // Validate ID Card
+        if (!idCard) {
+            idError.textContent = 'ID Card number is required';
+            idError.style.display = 'block';
+            document.getElementById('employeeIdCard').classList.add('error');
+            isValid = false;
+        }
+        
+        // Validate Password
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.style.display = 'block';
+            document.getElementById('employeePassword').classList.add('error');
+            isValid = false;
+        }
+        
+        return isValid;
     }
-
-    function hideLoader() {
-        loaderOverlay.classList.remove('active');
-        employeeLoginBtn.disabled = false;
-        adminLoginBtn.disabled = false;
+    
+    function validateAdminForm() {
+        let isValid = true;
+        const adminId = document.getElementById('adminId').value.trim();
+        const password = document.getElementById('adminPassword').value.trim();
+        const idError = document.getElementById('adminIdError');
+        const passwordError = document.getElementById('adminPasswordError');
+        
+        // Clear previous errors
+        idError.style.display = 'none';
+        document.getElementById('adminId').classList.remove('error');
+        passwordError.style.display = 'none';
+        document.getElementById('adminPassword').classList.remove('error');
+        
+        // Validate Admin ID
+        if (!adminId) {
+            idError.textContent = 'Admin ID is required';
+            idError.style.display = 'block';
+            document.getElementById('adminId').classList.add('error');
+            isValid = false;
+        }
+        
+        // Validate Password
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.style.display = 'block';
+            document.getElementById('adminPassword').classList.add('error');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    function clearErrors() {
+        const errorMessages = document.querySelectorAll('.error-message');
+        const errorInputs = document.querySelectorAll('.input-field.error');
+        
+        errorMessages.forEach(msg => {
+            msg.style.display = 'none';
+        });
+        
+        errorInputs.forEach(input => {
+            input.classList.remove('error');
+        });
     }
 
     // Employee form submission
     employeeLoginForm.addEventListener('submit', function(e) {
-        const idCard = document.getElementById('employeeIdCard').value.trim();
-        const password = document.getElementById('employeePassword').value.trim();
+        e.preventDefault();
         
-        if (idCard && password) {
-            showLoader();
-            setTimeout(() => {
-            }, 100);
-        } else {
-            e.preventDefault();
+        if (validateEmployeeForm()) {
+            // Disable button to prevent multiple submissions
+            document.getElementById('employeeLoginBtn').disabled = true;
+            // Submit the form
+            employeeLoginForm.submit();
         }
     });
 
     // Admin form submission
     adminLoginForm.addEventListener('submit', function(e) {
-        const adminId = document.getElementById('adminId').value.trim();
-        const password = document.getElementById('adminPassword').value.trim();
+        e.preventDefault();
         
-        if (adminId && password) {
-            showLoader();
-            setTimeout(() => {
-            }, 100);
-        } else {
-            e.preventDefault();
+        if (validateAdminForm()) {
+            // Disable button to prevent multiple submissions
+            document.getElementById('adminLoginBtn').disabled = true;
+            // Submit the form
+            adminLoginForm.submit();
         }
     });
 
-    // Auto-dismiss alert messages after 3 seconds
+    // Auto-dismiss alert messages after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
             setTimeout(() => {
                 alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            }, 1500);
+                alert.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
         });
     });
-    setTimeout(hideLoader, 10000); 
+    
+    // Add input event listeners to clear errors when user starts typing
+    document.querySelectorAll('.input-field').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const errorId = this.id + 'Error';
+            const errorElement = document.getElementById(errorId);
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        });
+    });
 </script>
 </body>
 </html>

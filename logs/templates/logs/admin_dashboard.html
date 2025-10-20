@@ -10,419 +10,600 @@
     <link rel="icon" type="image/png" href="{% static 'logs/kadick.ico' %}">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
+        /* --- Font Definitions --- */
         @font-face {
             font-family: 'Regularfont';
             src: url("{% static 'logs/Regularfont.ttf' %}") format('truetype');
             font-weight: normal;
             font-style: normal;
-
         }
         @font-face {
             font-family: 'Boldfont';
             src: url("{% static 'logs/Boldfont.ttf' %}") format('truetype');
         }
-        body {
-            background: #fef2f2;
-            min-height: 100vh;
-            font-family: 'Regularfont';
-            margin: 0;
+        @font-face {
+            font-family: 'Semiboldfont';
+            src: url("{% static 'logs/Semiboldfont.ttf' %}") format('truetype');
         }
+        
+        /* --- Design Variables --- */
+        :root {
+            --primary-color: #ec3338;
+            --primary-dark: #d12a2e;
+            --primary-light: #f8e0e1;
+            --accent-color: #1e293b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #fef2f2;
+            --bg-white: #ffffff;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Updated shadow for lifted container look */
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
+        
+        /* --- Global Styles --- */
+        body {
+            background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 100%);
+            min-height: 100vh;
+            font-family: 'Regularfont', sans-serif;
+            margin: 0;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* --- Navbar Styles (Design Refinements) --- */
         .navbar {
-            background: #fef2f2;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 2rem;
+            background: var(--bg-white);
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05); /* Lighter shadow */
+            border-bottom: 1px solid var(--border-color); /* Added subtle border */
+            padding: 0.75rem 2rem;
             display: flex;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 70px;
         }
 
         .brand {
-            color: #ec3338;
-            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Boldfont', sans-serif; /* Use Boldfont for brand only */
             font-size: 1.5rem;
             margin-right: auto;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .brand-logo {
-            height: 70px;
-            width: 150px;
+            height: 40px;
+            width: auto;
             object-fit: contain;
-            border-radius: 6px;
-            margin-left: -2rem;
-            margin-right: 2rem;
+            margin-right: 0.75rem;
         }
 
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 3rem; 
+            gap: 1.5rem;
         }
 
         .nav-welcome {
-            color: black;
-            font-weight: 500;
-            font-size: 25px;
-            margin-left: 0;
+            color: var(--text-dark);
+            font-weight: normal; 
+            font-size: 1.6rem;
+            font-family: 'Regularfont', sans-serif; /* Use Regularfont for welcome text */
         }
+        
+        /* --- Dashboard Container Styles (Design Refinements) --- */
         .dashboard-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); /* Enhanced shadow */
             width: 100%;
-            max-width: 1200px;
-            padding: 2rem;
-            backdrop-filter: blur(5px);
-            margin: 2rem auto;
+            max-width: 1100px; /* Adjusted max-width */
+            padding: 2.5rem; /* Increased padding */
+            margin: 2rem auto; /* Increased margin */
+            border: 1px solid var(--border-color);
         }
+        
+        /* --- Page Title (Font Control) --- */
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            font-family: 'Semiboldfont', sans-serif; /* Use Semiboldfont */
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
         .input-field {
             width: 100%;
-            font-size: 23px;
+            font-size: 0.95rem;
             padding: 0.75rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             margin-bottom: 1rem;
             transition: all 0.3s;
+            background: var(--bg-white);
         }
+        
         .input-field:focus {
             outline: none;
-            border-color: #ec3338;
-            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(236, 51, 56, 0.15);
         }
-        .btn-logout {
-            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            height: 52px;
-            display: flex;
+        
+        .btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
-            color: white;
-            padding: 1.25rem 2rem;
-            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
             border: none;
             cursor: pointer;
-            font-size: 20px;
-            letter-spacing: 0.5px;
-            min-width: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            height: 60px;
-        }
-        .btn-secondary {
-            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
-            color: white;
-            padding: 1.25rem 2rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            letter-spacing: 0.5px;
-            min-width: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.25px;
+            transition: all 0.3s;
             text-decoration: none;
-            text-align: center;
-            height: 60px;
-        }
-        .btn-view-logs {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            margin: 0 auto 1rem auto;
-            width: fit-content;
+            font-family: 'Semiboldfont', sans-serif; /* Use Semiboldfont for buttons */
         }
-        .btn-add {
-            background: linear-gradient(135deg, #ec3338 0%, #dc2626 100%);
+        
+        /* New style for icon-only buttons */
+        .btn-icon {
+            padding: 0.75rem 0.75rem; /* Reduced padding for compact look */
+            width: auto;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 21px;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #374151;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end; /* Align inputs and button group to the bottom */
+        }
 
+        .search-container .form-group {
+            flex-grow: 1; /* Inputs take up available space */
+            max-width: 300px; /* Optional: cap input width for better aesthetics */
         }
-        .table-container {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-top: 1.5rem;
-            display: none;
+
+        .search-buttons-group {
+            display: flex;
+            gap: 0.5rem; /* Small gap between icon buttons */
+            flex-shrink: 0; 
+            padding-bottom: 0.5rem; /* Aligns buttons with the bottom of input fields */
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
         }
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #374151;
-        }
-        tr:hover {
-            background-color: #f9fafb;
-        }
+        
+        /* --- Form Label (Font Control) --- */
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #374151;
-            font-size: 22px;
-        }
-        .search-container {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            align-items: flex-end;
-        }
-        .page-title {
-            font-size: 1.7rem;
-            font-weight: 600;
-            font-family: 'Boldfont';
-            margin-bottom: 1.5rem;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            flex: 1;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        .table-header-section {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-        .text-center{
-            font-size: 22px;
-        }
-
-        @media (max-width: 770px) {
-        .navbar {
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            gap: 1rem;
-            text-align: center;
-        }
-        .brand {
-            margin-right: 0;
-            text-align: center;
-            width: 100%;
-        }
-        .brand-logo {
-            margin-right: -35px;
-        }
-        .nav-actions {
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-        }
-        .nav-welcome {
-            margin-left: 0;
-            font-size: 1.1rem;
-            text-align: center;
-        }
-        .btn-logout {
-            margin: 0 auto;
+            color: var(--text-dark);
+            font-size: 0.9rem; /* Slightly reduced font size */
+            font-family: 'Semiboldfont', sans-serif; /* Use Semiboldfont for labels */
         }
         
-        .nav-welcome {
-            margin-left: 0;
-            font-size: 1.1rem;
-        }
-        
-        .brand {
-            font-size: 1.3rem;
-        }
-        
-        .btn-logout {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9rem;
-            width: 90%;
-            max-width: 100px;
-        }
-        
-        .dashboard-container {
-            margin: 1rem auto;
-            padding: 1.5rem;
-            width: 90%;
-        }
-        
-        .page-title {
-            font-size: 1.3rem;
-            text-align: center;
-        }
-        
-        .search-container {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .form-group {
-            width: 100%;
-        }
-        
-        .input-field {
-            font-size: 1rem;
-            padding: 0.6rem 0.8rem;
-        }
-        
-        .btn-primary,
-        .btn-secondary {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-            min-width: auto;
-            height: auto;
-        }
-        
-        .btn-add {
-            width: 100%;
-            text-align: center;
-            font-size: 1rem;
-            padding: 0.8rem;
+        .table-container {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: none;
         }
         
         table {
-            font-size: 0.875rem;
+            width: 100%;
+            border-collapse: collapse;
         }
         
         th, td {
-            padding: 0.5rem;
-            word-break: break-word;
-            font-size: 0.6rem;
-        }
-        th:nth-child(5) {
-            word-break: normal;
-            max-width: 50px;
-        }
-        th:nth-child(4),
-        td:nth-child(4) {
-            min-width: 120px;
-        }
-
-        td:nth-child(5) {
-            font-size: 0.6rem;
-            min-width: 70px;
-        }
-
-        th:nth-child(1),
-        th:nth-child(2),
-        th:nth-child(3) {
-            min-width: 40px;
-            font-size: 8px;
-        }
-
-        .btn-view-logs {
-            font-size: 1rem;
-            padding: 0.6rem 1.2rem;
-            width: 100%;
-            max-width: 200px;
-        }
-        
-        .form-label {
-            font-size: 1rem;
-        }
-
-        .text-center {
+            padding: 0.875rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
+        
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Semiboldfont', sans-serif; /* Use Semiboldfont for table headers */
         }
+        
+        tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-completed {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .text-center {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        
+        .empty-state {
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* --- Modal Title (Font Control) --- */
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'Semiboldfont', sans-serif; /* Use Semiboldfont */
+            color: var(--text-dark);
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-field {
+            flex: 1;
+        }
+        
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-input-container input {
+            width: 100%;
+            padding-right: 3rem;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1rem;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .password-toggle:hover {
+            color: var(--text-dark);
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            padding: 0.875rem 1.25rem;
+            border-radius: var(--radius-md);
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            max-width: 350px;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            background-color: var(--success-color);
+            font-size: 20px;
+        }
+        
+        .toast.error {
+            background-color: var(--primary-color);
+            font-size: 20px;
+        }
+        
+        .toast.warning {
+            background-color: #f59e0b;
+        }
+        
+        /* --- Responsive styles --- */
+        @media (max-width: 1024px) {
+            .search-container {
+                flex-wrap: wrap; /* Allow wrapping */
+            }
+            .search-container .form-group {
+                max-width: none;
+                flex-basis: 45%; /* Two per row */
+            }
+            .search-buttons-group {
+                flex-basis: 100%; /* Buttons take full width */
+                justify-content: flex-start;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+                height: auto;
+            }
+            
+            .brand-logo {
+                margin: 0 auto;
+                height: 35px;
+            }
+            
+            .brand {
+                margin-right: 0;
+                text-align: center;
+                font-size: 1.3rem;
+            }
+            
+            .nav-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+                width: 100%;
+            }
+            
+            .nav-welcome {
+                font-size: 0.9rem;
+            }
+            
+            .dashboard-container {
+                padding: 1.5rem;
+                margin: 1rem auto;
+                width: 95%;
+            }
+            
+            .search-container {
+                flex-direction: column; /* Stack vertically */
+            }
+            
+            .search-container .form-group {
+                max-width: 100%;
+                flex-basis: 100%;
+            }
 
-        @media (min-width: 771px) {
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 2.5rem 3rem;
-        border-radius: 18px;
-    }
-    .navbar {
-        flex-direction: row;
-        padding: 1.5rem 3rem;
-        gap: 0;
-        text-align: left;
-    }
-    .brand {
-        font-size: 29px;
-    }
-    .nav-welcome {
-        font-size: 1.75rem;
-        margin-left: 1px;
-    }
-    .btn-logout {
-        font-size: 1.3rem;
-        padding: 1rem 2.5rem;
-        max-width: 180px;
-    }
-    .btn-primary,
-    .btn-secondary,
-    .btn-view-logs,
-    .btn-add {
-        font-size: 1.2rem;
-        padding: 1.5rem 2.5rem;
-        min-width: 180px;
-        height: 65px;
-    }
-    .btn-add {
-        font-size: 1.2rem;
-        padding: 1rem 2rem;
-        min-width: 160px;
-    }
-    .search-container {
-        flex-direction: row;
-        gap: 1.5rem;
-        align-items: flex-end;
-    }
-    .form-label {
-        font-size: 1.2rem;
-    }
-    .input-field {
-        font-size: 1.1rem;
-        padding: 1rem 1.2rem;
-    }
-    .table-container {
-        margin-top: 2rem;
-    }
-    table {
-        font-size: 1.1rem;
-    }
-    th, td {
-        font-size: 1rem;
-        padding: 1rem 1.2rem;
-    }
-    .text-center {
-        font-size: 1.1rem;
-    }
-}
+            .search-buttons-group {
+                width: 100%;
+                justify-content: stretch; /* Stretch buttons to fill width */
+                gap: 1rem;
+                padding-bottom: 0;
+            }
+
+            .search-buttons-group .btn {
+                flex-grow: 1; /* Make buttons expand */
+            }
+            
+            .action-buttons {
+                grid-column: span 1;
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.625rem 0.5rem;
+            }
+            
+            .modal {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .toast {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -431,51 +612,125 @@
         <div class="brand">DAILY LOG SYSTEM</div>
         <div class="nav-actions">
             <div class="nav-welcome">Welcome, Admin</div>
-            <a href="{% url 'logout' %}" class="btn-logout" id="logoutBtn">
-                <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 0.6rem;"></i>Logout</a>
+            <a href="{% url 'logout' %}" class="btn btn-primary" id="logoutBtn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>Logout
+            </a>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="modal-overlay" id="addStaffModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Staff</h3>
+                <button type="button" class="modal-close" id="closeModalBtn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <form method="post" id="addStaffForm" action="{% url 'add_staff' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" id="first_name" name="first_name" class="input-field" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" class="input-field" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="input-field" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="input-field" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="password-input-container">
+                            <input type="password" id="password" name="password" class="input-field" required>
+                            <button type="button" class="password-toggle" id="passwordToggle">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_card_number" class="form-label">ID Card Number</label>
+                        <input type="text" id="id_card_number" name="id_card_number" class="input-field" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitStaffBtn">
+                        <i class="fa-solid fa-user-plus"></i>Add Staff
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <div class="dashboard-container">
-        <div class="page-title">Staff Log Search</div>
-        
-        <div style="margin-bottom: 1.5rem; text-align: right;">
-            <a href="{% url 'add_staff' %}" class="btn-add">
-                <i class="fa-duotone fa-solid fa-user-plus" style="margin-right: 0.6rem;"></i>Add Staff
-            </a>
+        <div class="section-header">
+            <h1 class="page-title">Staff Log Search</h1>
+            <button class="btn btn-outline" id="openModalBtn">
+                <i class="fa-solid fa-user-plus"></i>Add Staff
+            </button>
         </div>
         
         <form method="get" class="search-container" action="">
-            <div class="form-group" style="flex: 2;">
+            <div class="form-group">
                 <label class="form-label">Search Staff Member</label>
-                <input type="text" class="input-field" name="id_card" value="{{ id_card }}" placeholder="Enter staff ID Card Number">            </div>
+                <input type="text" class="input-field" name="id_card" value="{{ id_card }}" placeholder="Enter staff ID Card Number">
+            </div>
             <div class="form-group">
                 <label class="form-label">Select Date</label>
                 <input type="date" class="input-field" name="date" value="{{ date }}">
             </div>
-            <button class="btn-primary" type="submit" style="margin-bottom: 1rem;">
-                <i class="fa-solid fa-magnifying-glass" style="margin-right: 0.6rem;"></i>Search</button>
-                    <a href="{% url 'export_logs_excel' %}?id_card={{ id_card }}&date={{ date }}" class="btn-secondary" style="margin-bottom: 1rem;">                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                    <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V10.5Z" clip-rule="evenodd" />
-                </svg>
-
-                Export to Excel</a>
+            
+            <!-- Move buttons to the same line -->
+            <div class="search-buttons-group">
+                <button class="btn btn-primary btn-icon" type="submit" title="Search Logs">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>SEARCH</span>
+                </button>
+                <a href="{% url 'export_logs_excel' %}?id_card={{ id_card }}&date={{ date }}" class="btn btn-secondary btn-icon" title="Export to Excel">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>EXPORT TO EXCEL</span>
+                </a>
+            </div>
         </form>
         
-        <div class="table-header-section">
-            <button class="btn-view-logs" id="viewLogsBtn">
-                View Logs</button>
+        <div class="action-buttons">
+            <button class="btn btn-success" id="viewLogsBtn">
+                <i class="fa-solid fa-list"></i>View Logs
+            </button>
         </div>
         
         <div class="table-container" id="logTableContainer">
-            <table id="logTable" class="w-full" style="font-size: 21px">
+            <table id="logTable" class="w-full">
                 <thead>
                     <tr>
-                        <th>STAFF NAME</th>
-                        <th>START TIME</th>
-                        <th>END TIME</th>
-                        <th>DESCRIPTION</th>
-                        <th>STATUS</th>
+                        <th>Staff Name</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Description</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
@@ -486,13 +741,23 @@
                                 <td>{{ log.time_interval|slice:":5" }}</td>
                                 <td>{{ log.time_interval|slice:"-5:" }}</td>
                                 <td>{{ log.description }}</td>
-                                <td>{{ log.status }}</td>
+                                <td>
+                                    <span class="status-badge 
+                                        {% if log.status == 'Active' %}status-active
+                                        {% elif log.status == 'Pending' %}status-pending
+                                        {% else %}status-completed{% endif %}">
+                                        {{ log.status }}
+                                    </span>
+                                </td>
                             </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-gray-500">
-                                No logs found{% if staff_name %} for {{ staff_name }}{% endif %}{% if date %} on {{ date }}{% endif %}.
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                    <p>No logs found{% if staff_name %} for {{ staff_name }}{% endif %}{% if date %} on {{ date }}{% endif %}.</p>
+                                </div>
                             </td>
                         </tr>
                     {% endif %}
@@ -500,31 +765,89 @@
             </table>
         </div>
     </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const addStaffModal = document.getElementById('addStaffModal');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passwordInput = document.getElementById('password');
+            const toastContainer = document.getElementById('toastContainer');
+            const addStaffForm = document.getElementById('addStaffForm');
+            
             const viewLogsBtn = document.getElementById('viewLogsBtn');
             const logTableContainer = document.getElementById('logTableContainer');
-            
-            
+
+            // Open modal
+            openModalBtn.addEventListener('click', function() {
+                addStaffModal.classList.add('active');
+            });
+
+            // Close modal
+            function closeModal() {
+                addStaffModal.classList.remove('active');
+                addStaffForm.reset();
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            addStaffModal.addEventListener('click', function(e) {
+                if (e.target === addStaffModal) closeModal();
+            });
+
+            // Password toggle
+            passwordToggle.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+
+            // Toasts
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+
+            // Convert messages to toasts
+            const messagesContainer = document.querySelector('.messages');
+            if (messagesContainer) {
+                messagesContainer.querySelectorAll('div').forEach(div => {
+                    const message = div.textContent;
+                    let type = 'success';
+                    if (/error|failed|exists|invalid/i.test(message)) type = 'error';
+                    else if (/warn/i.test(message)) type = 'warning';
+                    showToast(message, type);
+                });
+                setTimeout(() => messagesContainer.remove(), 100);
+            }
+
+            // View logs toggle
             const logsExist = document.querySelectorAll('#logTableBody tr').length > 0;
-            
             if (!logsExist) {
                 viewLogsBtn.style.display = 'none';
                 logTableContainer.style.display = 'none';
             } else {
-                viewLogsBtn.style.display = 'flex';
-                
                 viewLogsBtn.addEventListener('click', function() {
-                    // Toggle the display of the table container
-                    if (logTableContainer.style.display === 'none' || logTableContainer.style.display === '') {
-                        logTableContainer.style.display = 'block';
-                        viewLogsBtn.textContent = 'Hide Logs';
-                        viewLogsBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-                    } else {
-                        logTableContainer.style.display = 'none';
-                        viewLogsBtn.textContent = 'View Logs';
-                        viewLogsBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-                    }
+                    const visible = logTableContainer.style.display === 'block';
+                    logTableContainer.style.display = visible ? 'none' : 'block';
+                    viewLogsBtn.innerHTML = visible
+                        ? '<i class="fa-solid fa-list"></i>View Logs'
+                        : '<i class="fa-solid fa-eye-slash"></i>Hide Logs';
+                    viewLogsBtn.classList.toggle('btn-primary', !visible);
+                    viewLogsBtn.classList.toggle('btn-success', visible);
                 });
             }
         });
