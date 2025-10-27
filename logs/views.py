@@ -245,7 +245,7 @@ def export_logs_excel(request):
         )
         ws.append([
             staff_name_val or log.employee.username,
-            str(log.date),
+            log.date.strftime('%Y-%m-%d') if hasattr(log, 'date') and log.date else '',
             log.time_interval,
             log.description,
             log.status
